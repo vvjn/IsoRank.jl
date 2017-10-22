@@ -43,20 +43,20 @@ function isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
     if alpha != 1.0 && b != nothing
         b = b ./ sum(abs,b) # b sums to 1
         L = LinearMap{Float64}((y,x) -> begin
-                               At_mul_B!(y, A, x)
-                               y .= alpha .* y .* d  .+ (1-alpha) .* vec(b)
+                               At_mul_B!(y, A, d .* x)
+                               y .= alpha .* y .+ (1-alpha) .* vec(b)
                                y
                                end, size(A,1), size(A,2))
     else
         L = LinearMap{Float64}((y,x) -> begin
-                               At_mul_B!(y, A, x)
-                               y .= alpha .* y .* d
+                               At_mul_B!(y, A, d .* x)
+                               y .= alpha .* y
                                y
                                end, size(A,1), size(A,2))
     end
-    x = rand(Float64,size(L,2))
+    x = copy(vec(b)) #ones(Float64,size(L,2)) #rand(Float64,size(L,2))
     x ./= norm(x)
-    res = powm!(L, x, log = true, verbose=true, tol=tol, maxiter=maxiter)
+    res = powm!(L, x, log=true, verbose=true, tol=tol, maxiter=maxiter)
     reshape(x, size(G1,1), size(G2,1)), res, L
 end
 

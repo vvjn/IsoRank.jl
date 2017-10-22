@@ -22,7 +22,7 @@ compared to other implementations of IsoRank.
 
 ## Installation
 
-We use the NetalignMeasures and NetalignUtils package here. IsoRank.jl also
+We use the NetalignMeasures and NetalignUtils package to read networks. IsoRank.jl
 depends on the LinearMaps and IterativeSolvers packages. These can be installed
 as follows.
 
@@ -42,10 +42,17 @@ IsoRank matrix using just network topology.
 
 ```julia
 using NetalignUtils
+using IsoRank
+
 G1 = readgw("0Krogan_2007_high.gw").G
 G2 = G1
 
 R = isorank(G1, G2, damping=0.85)
+
+truemap = 1:size(G2,1)
+randmap = randperm(size(G2,1))
+println(sum(R[sub2ind(size(R),truemap,truemap)]))
+println(sum(R[sub2ind(size(R),truemap,randmap)]))
 ```
 
 Assuming we have a matrix of node similarities, we can calculate
@@ -58,7 +65,7 @@ b = rand(size(G1,1), size(G2,1))
 R = isorank(G1, G2, b, 0.5)
 ```
 
-Maximum number of iterations and error tolerance can be given as follows.
+Maximum number of iterations and error tolerance can be set as follows.
 
 ```julia
 R = isorank(G1, G2, b, 0.5, maxiter=20, tol=1e-5)
