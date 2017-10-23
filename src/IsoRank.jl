@@ -51,7 +51,7 @@ kronlm(A,B) = kronlm(promote_type(eltype(A),eltype(B)),A,B)
 - `log=true,verbose=true` : logging and printing
 """    
 function powermethod!(L, x;
-                      maxiter=15, tol=eps(Float64) * size(G1,1) * size(G2,1),
+                      maxiter=15, tol=eps(Float64) * size(L,2),
                       log=true, verbose=true)
     T = eltype(L)
     x ./= sum(abs,x)
