@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/vvjn/IsoRank.jl.svg?branch=master)](https://travis-ci.org/vvjn/IsoRank.jl) [![Coverage Status](https://coveralls.io/repos/vvjn/IsoRank.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/vvjn/IsoRank.jl?branch=master) [![codecov.io](http://codecov.io/github/vvjn/IsoRank.jl/coverage.svg?branch=master)](http://codecov.io/github/vvjn/IsoRank.jl?branch=master)
 
-IsoRank.jl calculates the IsoRank matrix as described in "Global alignment oF
+IsoRank.jl calculates the IsoRank matrix as described in "Global alignment of
 multiple protein interaction networks with application to functional
 orthology detection", Rohit Singh, Jinbo Xu, and Bonnie Berger (2008),
 with much better space and time complexity. This is not code by the authors of
@@ -12,13 +12,9 @@ The IsoRank matrix is calculated by creating the product graph of two
 networks, and then performing PageRank on the product graph. PageRank
 is calculated by performing power iteration to calculate the dominant
 eigenvector of the modified adjacency matrix of the product
-graph. This package is slightly different from the IsoRank paper in
-that the IsoRank paper recommends to normalize the current estimate of
-the eigenvector using L_1 norm while this package uses the L_2 norm.
-
-Since IsoRank.jl doesn't explicitly build the product graph in order
-to perform power iteration, it has much better time and space complexity
-compared to other implementations of IsoRank.
+graph. Since IsoRank.jl doesn't explicitly build the product graph in
+order to perform power iteration, it has much better time and space
+complexity compared to other implementations of IsoRank.
 
 ## Installation
 
