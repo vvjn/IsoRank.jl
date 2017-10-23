@@ -35,7 +35,7 @@ end
 kronlm(A,B) = kronlm(promote_type(eltype(A),eltype(B)),A,B)
 
 """
-    powermethod!(L, x; <keyword arguments>) -> log history
+    powermethod!(L, x; <keyword arguments>) -> radius, x, [log/history]
 
     Perform power method in order to find the dominant eigenvector
     of the linear operator L. Eigenvector is normalized w.r.t. L_1 norm.
@@ -50,28 +50,28 @@ kronlm(A,B) = kronlm(promote_type(eltype(A),eltype(B)),A,B)
 - `tol=eps(Float64) * size(G1,1) * size(G2,1)` : error tolerance in L_1
 - `log=true,verbose=true` : logging and printing
 """    
-function powermethod!(L, x;
-                      maxiter=15, tol=eps(Float64) * size(L,2),
+function powermethod!(A, x;
+                      maxiter=15, tol=eps(Float64) * size(A,2),
                       log=true, verbose=true)
-    T = eltype(L)
-    x ./= sum(abs,x)
-    xlast = similar(x)
+    T = eltype(A)
+    x ./= norm(x,1)
+    Ax = similar(x)
     verbose && println("Running power method, maxiter = $maxiter, tol = $tol")
     history = Tuple{Int,T,T}[]
     iter = 0
     radius = zero(T)
-    while iter < maxiter
-        copy!(xlast, x)
-        A_mul_B!(x, L, xlast)
-        x ./= sum(abs,x) # want |x|_1 = 1
-        err = sum(abs,x-xlast)/length(x)
-        radius = dot(x,xlast)/dot(xlast,xlast)
+    while iter <= maxiter
+        A_mul_B!(Ax, A, x)
+        Ax ./= norm(Ax,1) # want |x|_1 = 1
+        err = norm(Ax-x,1)
+        radius = dot(x,Ax)/dot(x,x)
         verbose && @show iter,err,radius
         log && push!(history,(iter,err,radius))
+        copy!(x, Ax)
         err < tol && break
         iter += 1
     end
-    radius,x,history
+    if log radius,x,history else radius,x end
 end
 
 """
@@ -103,7 +103,7 @@ function isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
     A = kronlm(Float64,G2,G1)
     d = 1.0 ./ (A * ones(Float64,size(A,2))) # rows of A sum to 1
     if alpha != 1.0
-        bsum = sum(abs,b)
+        bsum = norm(b,1)
         bsum==0.0 && error("b is a 0-vector")
         b = b ./ bsum # make b sum to 1
         L = LinearMap{Float64}((y,x) -> begin
