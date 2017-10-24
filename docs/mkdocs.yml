@@ -2,7 +2,6 @@ site_name:        IsoRank.jl
 repo_url:         https://github.com/vvjn/IsoRank.jl
 site_description: IsoRank
 site_author:      vvjn
-
 theme: readthedocs
 
 extra_css:
@@ -13,6 +12,7 @@ extra_javascript:
   - assets/mathjaxhelper.js
 
 markdown_extensions:
+  - codehilite
   - extra
   - tables
   - fenced_code
@@ -21,4 +21,5 @@ markdown_extensions:
 docs_dir: 'build'
 
 pages:
-  - Home: index.md
+  - Introduction: index.md
+  - Functions: funs.md

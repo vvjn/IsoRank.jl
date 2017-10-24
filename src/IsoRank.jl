@@ -34,19 +34,19 @@ end
 kronlm(A,B) = kronlm(promote_type(eltype(A),eltype(B)),A,B)
 
 """
-    powermethod!(L, x; <keyword arguments>) -> radius, x, [log/history]
+    powermethod!(A, x; <keyword arguments>) -> radius, x, [log/history]
 
 Performs power method in order to find the dominant eigenvector
-of the linear operator L. Eigenvector is normalized w.r.t. L_1 norm.
+of the linear operator A. Eigenvector is normalized w.r.t. L_1 norm.
 Modifies initial eigenvector estimate x.
 
 # Arguments
-- `L` : linear operator
+- `A` : linear operator
 - `x` : initial estimate of the eigenvector, not necessarily normalized
 
 # Keyword arguments
 - `maxiter` : maximum # of iterations
-- `tol=eps(Float64) * size(G1,1) * size(G2,1)` : error tolerance in L_1
+- `tol=eps(Float64) * size(A,2)` : error tolerance in L_1
 - `log=true,verbose=true` : logging and printing
 """    
 function powermethod!(A, x;
