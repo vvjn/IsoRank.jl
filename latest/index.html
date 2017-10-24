@@ -129,6 +129,7 @@ G2 = G1
 
 R = isorank(G1, G2, damping=0.85)
 
+R ./= maximum(R)
 truemap = 1:size(G2,1)
 randmap = randperm(size(G2,1))
 println(sum(R[sub2ind(size(R),truemap,truemap)]))
@@ -202,5 +203,5 @@ println(norm(L * vec(R) - res[1] * vec(R),1))</code></pre>
 
 <!--
 MkDocs version : 0.17.0
-Build Date UTC : 2017-10-24 07:28:26
+Build Date UTC : 2017-10-24 15:26:39
 -->
