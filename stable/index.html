@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="IsoRank">
+  <meta name="author" content="vvjn">
+  <link rel="shortcut icon" href="./img/favicon.ico">
+  <title>Introduction - IsoRank.jl</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="./css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="./css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="./css/highlight.css">
+  <link href="./assets/Documenter.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Introduction";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = "/";
+  </script>
+  
+  <script src="./js/jquery-2.1.1.min.js"></script>
+  <script src="./js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="./js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> IsoRank.jl</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href=".">Introduction</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#introduction">Introduction</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#installation">Installation</a></li>
+        
+            <li><a class="toctree-l3" href="#example-usage">Example usage</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="funs/">Functions</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">IsoRank.jl</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Introduction</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/edit/master/docs/index.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p><a id='Introduction-1'></a></p>
+<h1 id="introduction">Introduction</h1>
+<p>IsoRank.jl is a Julia implementation of the IsoRank matrix as described in "Global alignment of multiple protein interaction networks with application to functional orthology detection", Rohit Singh, Jinbo Xu, and Bonnie Berger (2008).</p>
+<p>The IsoRank matrix is calculated by creating the product graph of two networks, and then performing PageRank on the product graph. PageRank is done by using the power method to calculate the dominant eigenvector of the modified adjacency matrix of the product graph. Since IsoRank.jl doesn't explicitly build the product graph in order to perform power iteration, it has much better time and space complexity compared to other implementations of IsoRank.</p>
+<p><a id='Installation-1'></a></p>
+<h2 id="installation">Installation</h2>
+<p>IsoRank can be installed as follows. We also use the NetalignUtils to read networks.</p>
+<pre class="codehilite"><code class="language-julia">Pkg.add(&quot;IsoRank&quot;)
+Pkg.add(&quot;NetalignUtils&quot;)</code></pre>
+
+
+<p><a id='Example-usage-1'></a></p>
+<h2 id="example-usage">Example usage</h2>
+<p>We load an example network from the "test/" directory and create an IsoRank matrix between the network and itself. Unlike the original paper which performs no damping when using network topology alone, we give it a damping factor of 0.85 in order to calculate a good IsoRank matrix using just network topology.</p>
+<pre class="codehilite"><code class="language-julia">using NetalignUtils
+using IsoRank
+
+G1 = readgw(&quot;0Krogan_2007_high.gw&quot;).G
+G2 = G1
+
+R = isorank(G1, G2, damping=0.85)
+
+R ./= maximum(R)
+truemap = 1:size(G2,1)
+randmap = randperm(size(G2,1))
+println(sum(R[sub2ind(size(R),truemap,truemap)]))
+println(sum(R[sub2ind(size(R),truemap,randmap)]))</code></pre>
+
+
+<p>Assuming we have a matrix of node similarities, we can calculate the IsoRank matrix using node similarities as follows, where <code>b</code> is a matrix of node similarities.</p>
+<pre class="codehilite"><code class="language-julia">b = rand(size(G1,1), size(G2,1))
+
+R = isorank(G1, G2, b, 0.5)</code></pre>
+
+
+<p>Maximum number of iterations and error tolerance can be set as follows.</p>
+<pre class="codehilite"><code class="language-julia">R = isorank(G1, G2, b, 0.5, maxiter=20, tol=1e-5)</code></pre>
+
+
+<p>We can extract the modified adjacency matrix, <code>L</code>, of the product graph as follows. <code>vec(R)</code> is the dominant eigenvector and <code>res[1]</code> is the corresponding eigenvalue of <code>L</code>.</p>
+<pre class="codehilite"><code class="language-julia">R,res,L = isorank(G1, G2, damping=0.85, details=true)
+
+println(norm(L * vec(R) - res[1] * vec(R),1))</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="funs/" class="btn btn-neutral float-right" title="Functions">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/vvjn/IsoRank.jl" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+      
+        <span style="margin-left: 15px"><a href="funs/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="./js/theme.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="./assets/mathjaxhelper.js"></script>
+      <script src="./search/require.js"></script>
+      <script src="./search/search.js"></script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 0.17.0
+Build Date UTC : 2017-10-24 15:54:52
+-->
