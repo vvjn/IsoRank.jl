@@ -4,7 +4,8 @@ makedocs()
 
 deploydocs(
            deps   = Deps.pip("mkdocs", "python-markdown-math"),           
-           repo = "github.com/vvjn/IsoRank.jl.git"
+           repo = "github.com/vvjn/IsoRank.jl.git",
+           julia = "0.6"
 )
 
 # makedocs(
