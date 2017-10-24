@@ -56,21 +56,23 @@ function powermethod!(A, x;
     x ./= norm(x,1)
     Ax = similar(x)
     verbose && println("Running power method, maxiter = $maxiter, tol = $tol")
-    history = Tuple{Int,T,T}[]
+    history = Tuple{Int,T,T,T}[]
     iter = 0
     radius = zero(T)
+    lambda = zero(T)
     while iter <= maxiter
         A_mul_B!(Ax, A, x)
-        Ax ./= norm(Ax,1) # want |x|_1 = 1
+        lambda = norm(Ax,1)
+        Ax ./= lambda # want |x|_1 = 1
         err = norm(Ax-x,1)
         radius = dot(x,Ax)/dot(x,x)
-        verbose && @show iter,err,radius
-        log && push!(history,(iter,err,radius))
+        verbose && @show iter,err,radius,lambda
+        log && push!(history,(iter,err,radius,lambda))
         copy!(x, Ax)
         err < tol && break
         iter += 1
     end
-    if log radius,x,history else radius,x end
+    if log lambda,x,history else lambda,x end
 end
 
 """

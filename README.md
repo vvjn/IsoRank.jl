@@ -2,16 +2,14 @@
 
 [![Build Status](https://travis-ci.org/vvjn/IsoRank.jl.svg?branch=master)](https://travis-ci.org/vvjn/IsoRank.jl) [![Coverage Status](https://coveralls.io/repos/vvjn/IsoRank.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/vvjn/IsoRank.jl?branch=master) [![codecov.io](http://codecov.io/github/vvjn/IsoRank.jl/coverage.svg?branch=master)](http://codecov.io/github/vvjn/IsoRank.jl?branch=master) [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://vvjn.github.io/IsoRank.jl/stable) [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://vvjn.github.io/IsoRank.jl/latest)
 
-
-IsoRank.jl calculates the IsoRank matrix as described in "Global alignment of
-multiple protein interaction networks with application to functional
-orthology detection", Rohit Singh, Jinbo Xu, and Bonnie Berger (2008),
-with much better space and time complexity. This is not code by the authors of
-that paper.
+IsoRank.jl is a Julia implementation of the IsoRank matrix as
+described in "Global alignment of multiple protein interaction
+networks with application to functional orthology detection", Rohit
+Singh, Jinbo Xu, and Bonnie Berger (2008).
 
 The IsoRank matrix is calculated by creating the product graph of two
 networks, and then performing PageRank on the product graph. PageRank
-is calculated by performing power iteration to calculate the dominant
+is done by using the power method to calculate the dominant
 eigenvector of the modified adjacency matrix of the product
 graph. Since IsoRank.jl doesn't explicitly build the product graph in
 order to perform power iteration, it has much better time and space
@@ -64,4 +62,13 @@ Maximum number of iterations and error tolerance can be set as follows.
 
 ```julia
 R = isorank(G1, G2, b, 0.5, maxiter=20, tol=1e-5)
+```
+
+We can extract the modified adjacency matrix, `L`, of the product graph as follows.
+`vec(R)` is the dominant eigenvector and `res[1]` is the corresponding eigenvalue of `L`.
+
+```julia
+R,res,L = isorank(G1, G2, damping=0.85, details=true)
+
+println(norm(L * vec(R) - res[1] * vec(R),1))
 ```
