@@ -61,8 +61,8 @@ function powermethod!(A, x;
     radius = zero(T)
     while iter <= maxiter
         A_mul_B!(Ax, A, x)
-        radius = dot(x,Ax)
-        Ax ./= norm(Ax,1) # want |x|_1 = 1
+        radius = norm(Ax,1)
+        Ax ./=  radius # want |x|_1 = 1
         err = norm(Ax-x,1)
         verbose && @show iter,err,radius
         log && push!(history,(iter,err,radius))

@@ -20,7 +20,7 @@ complexity compared to other implementations of IsoRank.
 IsoRank can be installed as follows.
 
 ```julia
-Pkg.add("IsoRank")
+Pkg.clone("https://github.com/vvjn/IsoRank.jl")
 ```
 
 # Documentation

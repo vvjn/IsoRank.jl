@@ -19,8 +19,9 @@ IsoRank can be installed as follows. We also use the NetalignUtils to
 read networks.
 
 ```julia
-Pkg.add("IsoRank")
-Pkg.add("NetalignUtils")
+Pkg.clone("https://github.com/vvjn/IsoRank.jl")
+Pkg.clone("https://github.com/vvjn/NetalignMeasures.jl")
+Pkg.clone("https://github.com/vvjn/NetalignUtils.jl")
 ```
 
 ## Example usage
