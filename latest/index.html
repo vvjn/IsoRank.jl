@@ -113,14 +113,15 @@
 <p>The IsoRank matrix is calculated by creating the product graph of two networks, and then performing PageRank on the product graph. PageRank is done by using the power method to calculate the dominant eigenvector of the modified adjacency matrix of the product graph. Since IsoRank.jl doesn't explicitly build the product graph in order to perform power iteration, it has much better time and space complexity compared to other implementations of IsoRank.</p>
 <p><a id='Installation-1'></a></p>
 <h2 id="installation">Installation</h2>
-<p>IsoRank can be installed as follows. We also use the NetalignUtils to read networks.</p>
-<pre class="codehilite"><code class="language-julia">Pkg.add(&quot;IsoRank&quot;)
-Pkg.add(&quot;NetalignUtils&quot;)</code></pre>
+<p>IsoRank can be installed as follows. We also use the NetalignUtils to read networks and so we install it as follows.</p>
+<pre class="codehilite"><code class="language-julia">Pkg.clone(&quot;https://github.com/vvjn/IsoRank.jl&quot;)
+Pkg.clone(&quot;https://github.com/vvjn/NetalignMeasures.jl&quot;)
+Pkg.clone(&quot;https://github.com/vvjn/NetalignUtils.jl&quot;)</code></pre>
 
 
 <p><a id='Example-usage-1'></a></p>
 <h2 id="example-usage">Example usage</h2>
-<p>We load an example network from the "test/" directory and create an IsoRank matrix between the network and itself. Unlike the original paper which performs no damping when using network topology alone, we give it a damping factor of 0.85 in order to calculate a good IsoRank matrix using just network topology.</p>
+<p>We load an example network from the "examples/" directory and create an IsoRank matrix between the network and itself. Unlike the original paper which performs no damping when using network topology alone, we give it a damping factor of 0.85 in order to calculate a good IsoRank matrix using just network topology.</p>
 <pre class="codehilite"><code class="language-julia">using NetalignUtils
 using IsoRank
 
@@ -203,5 +204,5 @@ println(norm(L * vec(R) - res[1] * vec(R),1))</code></pre>
 
 <!--
 MkDocs version : 0.17.0
-Build Date UTC : 2017-10-24 15:26:39
+Build Date UTC : 2017-10-24 19:56:51
 -->
