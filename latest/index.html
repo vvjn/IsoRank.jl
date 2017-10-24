@@ -8,7 +8,7 @@
   <meta name="description" content="IsoRank">
   <meta name="author" content="vvjn">
   <link rel="shortcut icon" href="./img/favicon.ico">
-  <title>Home - IsoRank.jl</title>
+  <title>Introduction - IsoRank.jl</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="./css/theme.css" type="text/css" />
@@ -18,7 +18,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Home";
+    var mkdocs_page_name = "Introduction";
     var mkdocs_page_input_path = "index.md";
     var mkdocs_page_url = "/";
   </script>
@@ -50,13 +50,26 @@
           
             <li class="toctree-l1 current">
 		
-    <a class="current" href=".">Home</a>
+    <a class="current" href=".">Introduction</a>
     <ul class="subnav">
             
-    <li class="toctree-l2"><a href="#isorankjl-documentation">IsoRank.jl Documentation</a></li>
+    <li class="toctree-l2"><a href="#introduction">Introduction</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#installation">Installation</a></li>
+        
+            <li><a class="toctree-l3" href="#example-usage">Example usage</a></li>
+        
+        </ul>
     
 
     </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="funs/">Functions</a>
 	    </li>
           
         </ul>
@@ -81,7 +94,7 @@
     
       
     
-    <li>Home</li>
+    <li>Introduction</li>
     <li class="wy-breadcrumbs-aside">
       
         <a href="https://github.com/edit/master/docs/index.md"
@@ -94,69 +107,59 @@
           <div role="main">
             <div class="section">
               
-                <p><a id='IsoRank.jl-Documentation-1'></a></p>
-<h1 id="isorankjl-documentation">IsoRank.jl Documentation</h1>
-<p><a id='IsoRank.isorank-Tuple{SparseMatrixCSC,SparseMatrixCSC,AbstractArray{T,2} where T,Real}' href='#IsoRank.isorank-Tuple{SparseMatrixCSC,SparseMatrixCSC,AbstractArray{T,2} where T,Real}'>#</a>
-<strong><code>IsoRank.isorank</code></strong> &mdash; <em>Method</em>.</p>
-<pre><code>isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
-        b::AbstractMatrix, alpha::Real; &lt;keyword arguments&gt;)
-</code></pre>
+                <p><a id='Introduction-1'></a></p>
+<h1 id="introduction">Introduction</h1>
+<p>IsoRank.jl is a Julia implementation of the IsoRank matrix as described in "Global alignment of multiple protein interaction networks with application to functional orthology detection", Rohit Singh, Jinbo Xu, and Bonnie Berger (2008).</p>
+<p>The IsoRank matrix is calculated by creating the product graph of two networks, and then performing PageRank on the product graph. PageRank is done by using the power method to calculate the dominant eigenvector of the modified adjacency matrix of the product graph. Since IsoRank.jl doesn't explicitly build the product graph in order to perform power iteration, it has much better time and space complexity compared to other implementations of IsoRank.</p>
+<p><a id='Installation-1'></a></p>
+<h2 id="installation">Installation</h2>
+<p>IsoRank can be installed as follows. We also use the NetalignUtils to read networks.</p>
+<pre class="codehilite"><code class="language-julia">Pkg.add(&quot;IsoRank&quot;)
+Pkg.add(&quot;NetalignUtils&quot;)</code></pre>
 
-<p>Creates the IsoRank matrix. That is, finds the pagerank values of the modified adjacency matrix of the product graph of G1 and G2. b acts as node restarts allowing you to incorporate external information.     (See Rohit Singh, Jinbo Xu, and Bonnie Berger. (2008) Global alignment of multiple protein interaction networks with application to functional orthology detection, Proc. Natl. Acad. Sci. USA, 105:12763-12768.)</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><code>G1,G2</code> : two adjacency matrices</li>
-<li><code>b</code> : matrix of node similarities, not necessarily normalized</li>
-<li><code>alpha</code>: weight between edge and node conservation</li>
-</ul>
-<p><strong>Keyword arguments</strong></p>
-<ul>
-<li><code>details=false</code> : if true, returns (R,res,L) where R is the IsoRank matrix, res is the power method details structure, L is the linear operator that the power method finds the eigenvector of; if false, returns R</li>
-<li>See <a href=".#IsoRank.powermethod!-Tuple{Any,Any}"><code>powermethod!</code></a> for other keyword arguments</li>
-</ul>
-<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/fdfe1deb1cb5400b89853f98eb27a6fe41b30058/src/IsoRank.jl#L78-L100' class='documenter-source'>source</a><br></p>
-<p><a id='IsoRank.isorank-Tuple{SparseMatrixCSC,SparseMatrixCSC}' href='#IsoRank.isorank-Tuple{SparseMatrixCSC,SparseMatrixCSC}'>#</a>
-<strong><code>IsoRank.isorank</code></strong> &mdash; <em>Method</em>.</p>
-<pre><code>isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
-        [damping=0.85]; &lt;keyword arguments&gt;)
-</code></pre>
 
-<p>If you don't have node similarities, you can still create a decent IsoRank matrix by doing damping like PageRank does. This is unlike the original paper that creates a bad IsoRank matrix when b = 0 or alpha = 1.</p>
-<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/fdfe1deb1cb5400b89853f98eb27a6fe41b30058/src/IsoRank.jl#L133-L141' class='documenter-source'>source</a><br></p>
-<p><a id='IsoRank.powermethod!-Tuple{Any,Any}' href='#IsoRank.powermethod!-Tuple{Any,Any}'>#</a>
-<strong><code>IsoRank.powermethod!</code></strong> &mdash; <em>Method</em>.</p>
-<pre><code>powermethod!(L, x; &lt;keyword arguments&gt;) -&gt; radius, x, [log/history]
-</code></pre>
+<p><a id='Example-usage-1'></a></p>
+<h2 id="example-usage">Example usage</h2>
+<p>We load an example network from the "test/" directory and create an IsoRank matrix between the network and itself. Unlike the original paper which performs no damping when using network topology alone, we give it a damping factor of 0.85 in order to calculate a good IsoRank matrix using just network topology.</p>
+<pre class="codehilite"><code class="language-julia">using NetalignUtils
+using IsoRank
 
-<p>Performs power method in order to find the dominant eigenvector of the linear operator L. Eigenvector is normalized w.r.t. L_1 norm. Modifies initial eigenvector estimate x.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><code>L</code> : linear operator</li>
-<li><code>x</code> : initial estimate of the eigenvector, not necessarily normalized</li>
-</ul>
-<p><strong>Keyword arguments</strong></p>
-<ul>
-<li><code>maxiter</code> : maximum # of iterations</li>
-<li><code>tol=eps(Float64) * size(G1,1) * size(G2,1)</code> : error tolerance in L_1</li>
-<li><code>log=true,verbose=true</code> : logging and printing</li>
-</ul>
-<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/fdfe1deb1cb5400b89853f98eb27a6fe41b30058/src/IsoRank.jl#L36-L51' class='documenter-source'>source</a><br></p>
-<p><a id='IsoRank.kronlm-Union{Tuple{Type{T},Any,Any}, Tuple{T}} where T' href='#IsoRank.kronlm-Union{Tuple{Type{T},Any,Any}, Tuple{T}} where T'>#</a>
-<strong><code>IsoRank.kronlm</code></strong> &mdash; <em>Method</em>.</p>
-<pre><code>kronlm([::Type{T}], A, B)
-</code></pre>
+G1 = readgw(&quot;0Krogan_2007_high.gw&quot;).G
+G2 = G1
 
-<p>Kronecker product of A and B  stored as a linear operator (from LinearMaps) so that you don't have to create the actual matrix. This is much faster than creating the matrix like the original paper does: O(|E|) instead of O(|E|^2) for each step of the power iteration where |E| is the average number of edges in the graphs</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><code>A,B</code> : linear operators with multiply and transpose operations</li>
-<li><code>T</code> : element type of the resulting linear operator</li>
-</ul>
-<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/fdfe1deb1cb5400b89853f98eb27a6fe41b30058/src/IsoRank.jl#L9-L22' class='documenter-source'>source</a><br></p>
+R = isorank(G1, G2, damping=0.85)
+
+truemap = 1:size(G2,1)
+randmap = randperm(size(G2,1))
+println(sum(R[sub2ind(size(R),truemap,truemap)]))
+println(sum(R[sub2ind(size(R),truemap,randmap)]))</code></pre>
+
+
+<p>Assuming we have a matrix of node similarities, we can calculate the IsoRank matrix using node similarities as follows, where <code>b</code> is a matrix of node similarities.</p>
+<pre class="codehilite"><code class="language-julia">b = rand(size(G1,1), size(G2,1))
+
+R = isorank(G1, G2, b, 0.5)</code></pre>
+
+
+<p>Maximum number of iterations and error tolerance can be set as follows.</p>
+<pre class="codehilite"><code class="language-julia">R = isorank(G1, G2, b, 0.5, maxiter=20, tol=1e-5)</code></pre>
+
+
+<p>We can extract the modified adjacency matrix, <code>L</code>, of the product graph as follows. <code>vec(R)</code> is the dominant eigenvector and <code>res[1]</code> is the corresponding eigenvalue of <code>L</code>.</p>
+<pre class="codehilite"><code class="language-julia">R,res,L = isorank(G1, G2, damping=0.85, details=true)
+
+println(norm(L * vec(R) - res[1] * vec(R),1))</code></pre>
               
             </div>
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="funs/" class="btn btn-neutral float-right" title="Functions">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+    </div>
   
 
   <hr/>
@@ -183,6 +186,8 @@
       
       
       
+        <span style="margin-left: 15px"><a href="funs/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
     </span>
 </div>
     <script>var base_url = '.';</script>
@@ -197,5 +202,5 @@
 
 <!--
 MkDocs version : 0.17.0
-Build Date UTC : 2017-10-24 07:06:04
+Build Date UTC : 2017-10-24 07:28:26
 -->
