@@ -9,9 +9,6 @@ CurrentModule = IsoRank
 isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
          b::AbstractMatrix, alpha::Real;
          details=false, args...)
-```
-
-```@docs
 isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC;
          damping=0.85, args...)                 
 ```

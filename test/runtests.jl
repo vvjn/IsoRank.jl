@@ -1,16 +1,12 @@
 using IsoRank
-using NetalignUtils
 using Base.Test
 
-G1 = readgw("../examples/0Krogan_2007_high.gw").G
-G2 = G1
-function test1(damping)
-    b = ones(Float64,size(G1,1),size(G2,1))
-    R, res, L = isorank(G1,G2,b,damping,maxiter=15,tol=1e-9,details=true)
+function test1()
+    G = sparse([1,2,3,1,3,2],[2,1,1,3,2,3],1,3,3)
+    R, res, L = isorank(G,G,maxiter=15,tol=1e-9,details=true)
     norm(L*vec(R) .- res[1].*vec(R)) < 1e-4
 end
-@test test1(0.4)
-@test test1(0.8)
+@test test1()
 
 function test2()
     G = sparse([1,2],[2,1],1,2,2)

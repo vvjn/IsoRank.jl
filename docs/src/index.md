@@ -25,7 +25,7 @@ Pkg.add("NetalignUtils")
 
 ## Example usage
 
-We load an example network from the "test/" directory and create
+We load an example network from the "examples/" directory and create
 an IsoRank matrix between the network and itself. Unlike the original
 paper which performs no damping when using network topology alone, we
 give it a damping factor of 0.85 in order to calculate a good
