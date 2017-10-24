@@ -7,7 +7,7 @@ using LinearMaps
 export isorank, kronlm, powermethod!
 
 """
-   kronlm([::Type{T}], A, B)
+    kronlm([::Type{T}], A, B)
 
 Kronecker product of A and B  stored as a linear operator (from LinearMaps)
 so that you don't have to create the actual matrix.
@@ -18,8 +18,7 @@ average number of edges in the graphs
 
 # Arguments
 - `A,B` : linear operators with multiply and transpose operations
-- `T` : element type of the resulting kron linear operator  
-
+- `T` : element type of the resulting linear operator  
 """
 function kronlm(::Type{T},A,B) where {T}
     f = (y,x) -> begin
@@ -37,9 +36,9 @@ kronlm(A,B) = kronlm(promote_type(eltype(A),eltype(B)),A,B)
 """
     powermethod!(L, x; <keyword arguments>) -> radius, x, [log/history]
 
-    Perform power method in order to find the dominant eigenvector
-    of the linear operator L. Eigenvector is normalized w.r.t. L_1 norm.
-    Modifies initial eigenvector estimate x.
+Performs power method in order to find the dominant eigenvector
+of the linear operator L. Eigenvector is normalized w.r.t. L_1 norm.
+Modifies initial eigenvector estimate x.
 
 # Arguments
 - `L` : linear operator
@@ -91,11 +90,11 @@ orthology detection, Proc. Natl. Acad. Sci. USA, 105:12763-12768.)
 - `alpha`: weight between edge and node conservation
 
 # Keyword arguments
-- See `powermethod!`    
 - `details=false` : if true, returns (R,res,L) where R is the IsoRank
   matrix, res is the power method details structure, L is the linear
   operator that the power method finds the eigenvector of; if false,
   returns R
+- See [`powermethod!`](@ref) for other keyword arguments   
 """
 function isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
                  b::AbstractMatrix, alpha::Real;
