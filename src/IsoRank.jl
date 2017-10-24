@@ -61,7 +61,7 @@ function powermethod!(A, x;
     radius = zero(T)
     while iter <= maxiter
         A_mul_B!(Ax, A, x)
-        radius = dot(x,Ax)/dot(x,x)
+        radius = dot(x,Ax)
         Ax ./= norm(Ax,1) # want |x|_1 = 1
         err = norm(Ax-x,1)
         verbose && @show iter,err,radius
@@ -121,11 +121,7 @@ function isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
     end
     res = powermethod!(L, x; args...)
     R = reshape(x, size(G1,1), size(G2,1))
-    if details
-        R, res, L
-    else
-        R
-    end
+    if details R, res, L else R end
 end
 
 """
