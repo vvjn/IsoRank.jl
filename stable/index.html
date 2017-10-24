@@ -120,7 +120,7 @@ Pkg.add(&quot;NetalignUtils&quot;)</code></pre>
 
 <p><a id='Example-usage-1'></a></p>
 <h2 id="example-usage">Example usage</h2>
-<p>We load an example network from the "test/" directory and create an IsoRank matrix between the network and itself. Unlike the original paper which performs no damping when using network topology alone, we give it a damping factor of 0.85 in order to calculate a good IsoRank matrix using just network topology.</p>
+<p>We load an example network from the "examples/" directory and create an IsoRank matrix between the network and itself. Unlike the original paper which performs no damping when using network topology alone, we give it a damping factor of 0.85 in order to calculate a good IsoRank matrix using just network topology.</p>
 <pre class="codehilite"><code class="language-julia">using NetalignUtils
 using IsoRank
 
@@ -203,5 +203,5 @@ println(norm(L * vec(R) - res[1] * vec(R),1))</code></pre>
 
 <!--
 MkDocs version : 0.17.0
-Build Date UTC : 2017-10-24 17:05:02
+Build Date UTC : 2017-10-24 17:08:00
 -->

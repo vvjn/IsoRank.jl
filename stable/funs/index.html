@@ -119,7 +119,7 @@
 <li><code>details=false</code> : if true, returns (R,res,L) where R is the IsoRank matrix, res is the power method details structure, L is the linear operator that the power method finds the eigenvector of; if false, returns R</li>
 <li>See <a href="./#IsoRank.powermethod!-Tuple{Any,Any}"><code>powermethod!</code></a> for other keyword arguments</li>
 </ul>
-<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/35c3eb94522036a57e3f21fb91803b6479c501e0/src/IsoRank.jl#L76-L98' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/6ef2411bf1c8476f1eb34951b622ffa1cc271602/src/IsoRank.jl#L76-L98' class='documenter-source'>source</a><br></p>
 <p><a id='IsoRank.isorank-Tuple{SparseMatrixCSC,SparseMatrixCSC}' href='#IsoRank.isorank-Tuple{SparseMatrixCSC,SparseMatrixCSC}'>#</a>
 <strong><code>IsoRank.isorank</code></strong> &mdash; <em>Method</em>.</p>
 <pre class="codehilite"><code>isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
@@ -127,7 +127,7 @@
 
 
 <p>If you don't have node similarities, you can still create a decent IsoRank matrix by doing damping like PageRank does. This is unlike the original paper that creates a bad IsoRank matrix when b = 0 or alpha = 1.</p>
-<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/35c3eb94522036a57e3f21fb91803b6479c501e0/src/IsoRank.jl#L131-L139' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/6ef2411bf1c8476f1eb34951b622ffa1cc271602/src/IsoRank.jl#L131-L139' class='documenter-source'>source</a><br></p>
 <p><a id='IsoRank.powermethod!-Tuple{Any,Any}' href='#IsoRank.powermethod!-Tuple{Any,Any}'>#</a>
 <strong><code>IsoRank.powermethod!</code></strong> &mdash; <em>Method</em>.</p>
 <pre class="codehilite"><code>powermethod!(A, x; &lt;keyword arguments&gt;) -&gt; radius, x, [log/history]</code></pre>
@@ -145,7 +145,7 @@
 <li><code>tol=eps(Float64) * size(A,2)</code> : error tolerance in L_1</li>
 <li><code>log=true,verbose=true</code> : logging and printing</li>
 </ul>
-<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/35c3eb94522036a57e3f21fb91803b6479c501e0/src/IsoRank.jl#L36-L51' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/6ef2411bf1c8476f1eb34951b622ffa1cc271602/src/IsoRank.jl#L36-L51' class='documenter-source'>source</a><br></p>
 <p><a id='IsoRank.kronlm-Union{Tuple{Type{T},Any,Any}, Tuple{T}} where T' href='#IsoRank.kronlm-Union{Tuple{Type{T},Any,Any}, Tuple{T}} where T'>#</a>
 <strong><code>IsoRank.kronlm</code></strong> &mdash; <em>Method</em>.</p>
 <pre class="codehilite"><code>kronlm([T], A, B)</code></pre>
@@ -157,7 +157,7 @@
 <li><code>A,B</code> : linear operators with multiply and transpose operations</li>
 <li><code>T</code> : element type of the resulting linear operator</li>
 </ul>
-<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/35c3eb94522036a57e3f21fb91803b6479c501e0/src/IsoRank.jl#L9-L22' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/6ef2411bf1c8476f1eb34951b622ffa1cc271602/src/IsoRank.jl#L9-L22' class='documenter-source'>source</a><br></p>
               
             </div>
           </div>
