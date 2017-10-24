@@ -2,7 +2,7 @@ using IsoRank
 using NetalignUtils
 using Base.Test
 
-G1 = readgw("0Krogan_2007_high.gw").G
+G1 = readgw("../examples/0Krogan_2007_high.gw").G
 G2 = G1
 function test1(damping)
     b = ones(Float64,size(G1,1),size(G2,1))

@@ -40,6 +40,7 @@ G2 = G1
 
 R = isorank(G1, G2, damping=0.85)
 
+R ./= maximum(R)
 truemap = 1:size(G2,1)
 randmap = randperm(size(G2,1))
 println(sum(R[sub2ind(size(R),truemap,truemap)]))

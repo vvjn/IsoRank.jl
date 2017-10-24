@@ -7,9 +7,9 @@ using LinearMaps
 export isorank, kronlm, powermethod!
 
 """
-    kronlm([::Type{T}], A, B)
+    kronlm([T], A, B)
 
-Kronecker product of A and B  stored as a linear operator (from LinearMaps)
+Kronecker product of A and B, stored as a linear operator (from LinearMaps.jl)
 so that you don't have to create the actual matrix.
 This is much faster than creating the matrix like
 the original paper does: O(|E|) instead of O(|E|^2)
@@ -18,7 +18,7 @@ average number of edges in the graphs
 
 # Arguments
 - `A,B` : linear operators with multiply and transpose operations
-- `T` : element type of the resulting linear operator  
+- `T` : element type of the resulting linear operator 
 """
 function kronlm(::Type{T},A,B) where {T}
     f = (y,x) -> begin
@@ -56,23 +56,21 @@ function powermethod!(A, x;
     x ./= norm(x,1)
     Ax = similar(x)
     verbose && println("Running power method, maxiter = $maxiter, tol = $tol")
-    history = Tuple{Int,T,T,T}[]
+    history = Tuple{Int,T,T}[]
     iter = 0
     radius = zero(T)
-    lambda = zero(T)
     while iter <= maxiter
         A_mul_B!(Ax, A, x)
-        lambda = norm(Ax,1)
-        Ax ./= lambda # want |x|_1 = 1
-        err = norm(Ax-x,1)
         radius = dot(x,Ax)/dot(x,x)
-        verbose && @show iter,err,radius,lambda
-        log && push!(history,(iter,err,radius,lambda))
+        Ax ./= norm(Ax,1) # want |x|_1 = 1
+        err = norm(Ax-x,1)
+        verbose && @show iter,err,radius
+        log && push!(history,(iter,err,radius))
         copy!(x, Ax)
         err < tol && break
         iter += 1
     end
-    if log lambda,x,history else lambda,x end
+    if log radius,x,history else radius,x end
 end
 
 """
