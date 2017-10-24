@@ -18,14 +18,12 @@ complexity compared to other implementations of IsoRank.
 
 ## Installation
 
-We use the NetalignMeasures and NetalignUtils package to read networks. IsoRank.jl
-depends on the LinearMaps package. These can be installed
-as follows.
+IsoRank can be installed as follows. We also use the NetalignUtils to
+read networks.
 
 ```julia
-Pkg.clone("https://github.com/vvjn/NetalignMeasures.jl")
-Pkg.clone("https://github.com/vvjn/NetalignUtils.jl")
-Pkg.clone("https://github.com/vvjn/IsoRank.jl")
+Pkg.add("IsoRank")
+Pkg.add("NetalignUtils")
 ```
 
 ## Example usage
