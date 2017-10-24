@@ -1,6 +1,6 @@
 # IsoRank
 
-[![Build Status](https://travis-ci.org/vvjn/IsoRank.jl.svg?branch=master)](https://travis-ci.org/vvjn/IsoRank.jl) [![codecov.io](http://codecov.io/github/vvjn/IsoRank.jl/coverage.svg?branch=master)](http://codecov.io/github/vvjn/IsoRank.jl?branch=master) [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://vvjn.github.io/IsoRank.jl/stable) [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://vvjn.github.io/IsoRank.jl/latest)
+[![Build Status](https://travis-ci.org/vvjn/IsoRank.jl.svg?branch=master)](https://travis-ci.org/vvjn/IsoRank.jl) [![codecov.io](http://codecov.io/github/vvjn/IsoRank.jl/coverage.svg?branch=master)](http://codecov.io/github/vvjn/IsoRank.jl?branch=master) [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://vvjn.github.io/IsoRank.jl/latest)
 
 IsoRank.jl is a Julia implementation of the IsoRank matrix as
 described in "Global alignment of multiple protein interaction

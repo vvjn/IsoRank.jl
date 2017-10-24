@@ -16,7 +16,7 @@ complexity compared to other implementations of IsoRank.
 ## Installation
 
 IsoRank can be installed as follows. We also use the NetalignUtils to
-read networks.
+read networks and so we install it as follows.
 
 ```julia
 Pkg.clone("https://github.com/vvjn/IsoRank.jl")
