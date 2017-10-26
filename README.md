@@ -5,7 +5,8 @@
 IsoRank.jl is a Julia implementation of the IsoRank matrix as
 described in "Global alignment of multiple protein interaction
 networks with application to functional orthology detection", Rohit
-Singh, Jinbo Xu, and Bonnie Berger (2008).
+Singh, Jinbo Xu, and Bonnie Berger (2008). IsoRank.jl also contains
+a PageRank implementation.
 
 The IsoRank matrix is calculated by creating the product graph of two
 networks, and then performing PageRank on the product graph. PageRank
