@@ -5,7 +5,7 @@ module IsoRank
 using LinearMaps
 using DataStructures
 
-export isorank, kronlm, powermethod!, pagerank
+export isorank, kronlm, powermethod!, pagerank, greedyalign
 
 """
     kronlm([T], A, B)
@@ -177,7 +177,19 @@ function isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC;
     isorank(G1,G2,b,damping; args...)   
 end
 
-function align(R::AbstractMatrix;seeds=[],maxiter=size(R,1)-length(seeds))
+"""
+    greedyalign(R::AbstractMatrix,seeds=Vector{Tuple{Int,Int}}();
+                maxiter=size(R,1)-length(seeds))
+
+Given matrix `R`, find a alignment using the greedy method.
+    
+# Arguments
+- `R` : m x n matrix
+- `seeds` : Initial seed node pairs
+- `maxiter` : Stop after aligning `maxiter` node pairs
+"""    
+function greedyalign(R::AbstractMatrix,seeds=Vector{Tuple{Int,Int}}();
+                     maxiter=size(R,1)-length(seeds))
     f = zeros(Int,size(R,1))
     n1 = size(R,1); n2 = size(R,2)
     L1 = Set{Int}()
@@ -202,6 +214,7 @@ function align(R::AbstractMatrix;seeds=[],maxiter=size(R,1)-length(seeds))
         iter += 1
         print("\rIteration $iter/$maxiter")
     end
+    println()
     f
 end
 
