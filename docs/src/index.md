@@ -1,9 +1,10 @@
 # Introduction
 
-IsoRank.jl is a Julia implementation of the IsoRank matrix as
+[IsoRank.jl](https://github.com/vvjn/IsoRank.jl) is a Julia implementation of IsoRank as
 described in "Global alignment of multiple protein interaction
 networks with application to functional orthology detection", Rohit
-Singh, Jinbo Xu, and Bonnie Berger (2008).
+Singh, Jinbo Xu, and Bonnie Berger (2008). IsoRank.jl also contains
+a PageRank implementation.
 
 The IsoRank matrix is calculated by creating the product graph of two
 networks, and then performing PageRank on the product graph. PageRank
@@ -12,6 +13,8 @@ eigenvector of the modified adjacency matrix of the product
 graph. Since IsoRank.jl doesn't explicitly build the product graph in
 order to perform power iteration, it has much better time and space
 complexity compared to other implementations of IsoRank.
+
+The greedy network alignment method described in the paper is also implemented here.
 
 ## Installation
 
@@ -26,7 +29,7 @@ Pkg.clone("https://github.com/vvjn/NetalignUtils.jl")
 
 ## Example usage
 
-We load an example network from the "examples/" directory and create
+We load an example network from the `examples/` directory and create
 an IsoRank matrix between the network and itself. Unlike the original
 paper which performs no damping when using network topology alone, we
 give it a damping factor of 0.85 in order to calculate a good
@@ -48,15 +51,35 @@ println(sum(R[sub2ind(size(R),truemap,truemap)]))
 println(sum(R[sub2ind(size(R),truemap,randmap)]))
 ```
 
-Assuming we have a matrix of node similarities, we can calculate
-the IsoRank matrix using node similarities as follows, where `b` is
-a matrix of node similarities.
+Given the IsoRank matrix, we perform greedy alignment as follows.
+
+``` julia
+f = greedyalign(R)
+```
+
+Given the alignment `f`, we construct the aligned node pairs and
+save the node pairs to file as follows.
+
+``` julia
+nodepairs = hcat(t1.nodes, t2.nodes[f])
+
+writedlm("yeast_yeast.aln", nodepairs)
+```
+
+## Using node similarities
+
+Assuming we have a matrix of node similarities, we can calculate the
+IsoRank matrix while incorporating external information through node
+similarities.  Here, `b` is a matrix of node similarities (but,
+obviously, use meaningful node similarities instead of random values).
 
 ```julia
 b = rand(size(G1,1), size(G2,1))
 
 R = isorank(G1, G2, b, 0.5)
 ```
+
+## Other parameters
 
 Maximum number of iterations and error tolerance can be set as follows.
 

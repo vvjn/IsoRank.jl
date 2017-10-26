@@ -1,18 +1,17 @@
 using Documenter, IsoRank
 
-makedocs()
+makedocs(
+           format = :html,
+           sitename = "Isorank",
+           pages = [
+                    "index.md", "Functions" => "funs.md"
+           ]
+       )
 
 deploydocs(
-           deps   = Deps.pip("mkdocs", "python-markdown-math"),           
            repo = "github.com/vvjn/IsoRank.jl.git",
+           target = "build",
+           deps   = nothing,
+           make   = nothing,
            julia = "0.6"
 )
-
-# makedocs(
-#     format = :html,
-#     sitename = "IsoRank",
-#     pages = [
-#         "index.md"
-#     ]
-# )
-

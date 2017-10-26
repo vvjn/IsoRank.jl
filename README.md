@@ -16,7 +16,7 @@ graph. Since IsoRank.jl doesn't explicitly build the product graph in
 order to perform power iteration, it has much better time and space
 complexity compared to other implementations of IsoRank.
 
-The greedy alignment method as described in the paper is also implemented here.
+The greedy network alignment method described in the paper is also implemented here.
 
 ## Installation
 

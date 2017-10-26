@@ -77,40 +77,6 @@ function powermethod!(A, x;
 end
 
 """
-     pagerank(A, damping=0.85, p = fill(1/size(A,2),size(A,2));
-              <keyword args>) -> x [, res, L]
-
-Creates PageRank vector.
-
-# Arguments
-- `A` : Adjacency matrix of the graph. A[u,v] = true if u -> v
-- `damping` : Damping
-- `p` : Initial probability vector
-
-# Keyword arguments
-- `details=false` : If true, returns (x,res,L) where x is the PageRank
-  vector, res is the power method detailed results structure, L is the linear
-  operator that the power method finds the eigenvector of; if false,
-  returns x.
-- See [`powermethod!`](@ref) for other keyword arguments   
-"""    
-function pagerank(A, damping=0.85, p = fill(1/size(A,2),size(A,2));
-                  details=false, args...)
-    S = 1.0 ./ (A * ones(Float64,size(A,2))) # rows of A sum to 1
-    D = find(S .== Inf) # 1 if no outlinks, 0 otherwise
-    S[D] = 0.0
-    pscaled = (1.0 - damping) .* p
-    L = LinearMap{Float64}((y,x) -> begin
-                           At_mul_B!(y, A, S .* x)
-                           y .= damping .* y .+ (damping * sum(x[D])) .* p .+ pscaled
-                           y
-                           end, size(A,1), size(A,2))
-    x = copy(p)
-    res = powermethod!(L, x; args...)
-    if details x, res, L else x end
-end
-
-"""
     isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
             b::AbstractMatrix, alpha::Real; <keyword arguments>)
     
@@ -216,6 +182,40 @@ function greedyalign(R::AbstractMatrix,seeds=Vector{Tuple{Int,Int}}();
     end
     println()
     f
+end
+
+"""
+     pagerank(A, damping=0.85, p = fill(1/size(A,2),size(A,2));
+              <keyword args>) -> x [, res, L]
+
+Creates PageRank vector.
+
+# Arguments
+- `A` : Adjacency matrix of the graph. A[u,v] = true if u -> v
+- `damping` : Damping
+- `p` : Initial probability vector
+
+# Keyword arguments
+- `details=false` : If true, returns (x,res,L) where x is the PageRank
+  vector, res is the power method detailed results structure, L is the linear
+  operator that the power method finds the eigenvector of; if false,
+  returns x.
+- See [`powermethod!`](@ref) for other keyword arguments   
+"""    
+function pagerank(A, damping=0.85, p = fill(1/size(A,2),size(A,2));
+                  details=false, args...)
+    S = 1.0 ./ (A * ones(Float64,size(A,2))) # rows of A sum to 1
+    D = find(isinf(S)) # 1 if no outlinks, 0 otherwise
+    S[D] = 0.0
+    pscaled = (1.0 - damping) .* p
+    L = LinearMap{Float64}((y,x) -> begin
+                           At_mul_B!(y, A, S .* x)
+                           y .= damping .* y .+ (damping * sum(x[D])) .* p .+ pscaled
+                           y
+                           end, size(A,1), size(A,2))
+    x = copy(p)
+    res = powermethod!(L, x; args...)
+    if details x, res, L else x end
 end
 
 end

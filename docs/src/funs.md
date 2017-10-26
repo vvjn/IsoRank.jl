@@ -12,8 +12,8 @@ isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
 isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC;
          damping=0.85, args...)
 greedyalign
+pagerank
 powermethod!(A, x; maxiter=15, tol=eps(Float64) * size(A,2),
                     log=true, verbose=true)
 kronlm(::Type{T},A,B) where {T}
-pagerank
 ```
