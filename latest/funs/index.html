@@ -107,19 +107,19 @@
         b::AbstractMatrix, alpha::Real; &lt;keyword arguments&gt;)</code></pre>
 
 
-<p>Creates the IsoRank matrix. That is, finds the pagerank values of the modified adjacency matrix of the product graph of G1 and G2. b acts as node restarts allowing you to incorporate external information.     (See Rohit Singh, Jinbo Xu, and Bonnie Berger. (2008) Global alignment of multiple protein interaction networks with application to functional orthology detection, Proc. Natl. Acad. Sci. USA, 105:12763-12768.)</p>
+<p>Creates the IsoRank matrix. That is, finds the PageRank values of the modified adjacency matrix of the product graph of G1 and G2. b acts as node restarts allowing you to incorporate external information.     (See Rohit Singh, Jinbo Xu, and Bonnie Berger. (2008) Global alignment of multiple protein interaction networks with application to functional orthology detection, Proc. Natl. Acad. Sci. USA, 105:12763-12768.)</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><code>G1,G2</code> : two adjacency matrices</li>
-<li><code>b</code> : matrix of node similarities, not necessarily normalized</li>
+<li><code>b</code> : matrix of node similarities between <code>G1</code> and <code>G2</code>, not necessarily normalized</li>
 <li><code>alpha</code>: weight between edge and node conservation</li>
 </ul>
 <p><strong>Keyword arguments</strong></p>
 <ul>
-<li><code>details=false</code> : if true, returns (R,res,L) where R is the IsoRank matrix, res is the power method details structure, L is the linear operator that the power method finds the eigenvector of; if false, returns R</li>
+<li><code>details=false</code> : If true, returns (R,res,L) where R is the IsoRank matrix, res is the power method detailed results structure, L is the linear operator that the power method finds the eigenvector of; if false, returns R</li>
 <li>See <a href="./#IsoRank.powermethod!-Tuple{Any,Any}"><code>powermethod!</code></a> for other keyword arguments</li>
 </ul>
-<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/9971a4684fa008f29f801b327434790da350cbb8/src/IsoRank.jl#L76-L98' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/c5f5df96b0e5595197ebd77d13ff84f76374b144/src/IsoRank.jl#L113-L135' class='documenter-source'>source</a><br></p>
 <p><a id='IsoRank.isorank-Tuple{SparseMatrixCSC,SparseMatrixCSC}' href='#IsoRank.isorank-Tuple{SparseMatrixCSC,SparseMatrixCSC}'>#</a>
 <strong><code>IsoRank.isorank</code></strong> &mdash; <em>Method</em>.</p>
 <pre class="codehilite"><code>isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
@@ -127,7 +127,21 @@
 
 
 <p>If you don't have node similarities, you can still create a decent IsoRank matrix by doing damping like PageRank does. This is unlike the original paper that creates a bad IsoRank matrix when b = 0 or alpha = 1.</p>
-<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/9971a4684fa008f29f801b327434790da350cbb8/src/IsoRank.jl#L127-L135' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/c5f5df96b0e5595197ebd77d13ff84f76374b144/src/IsoRank.jl#L165-L173' class='documenter-source'>source</a><br></p>
+<p><a id='IsoRank.greedyalign' href='#IsoRank.greedyalign'>#</a>
+<strong><code>IsoRank.greedyalign</code></strong> &mdash; <em>Function</em>.</p>
+<pre class="codehilite"><code>greedyalign(R::AbstractMatrix,seeds=Vector{Tuple{Int,Int}}();
+            maxiter=size(R,1)-length(seeds))</code></pre>
+
+
+<p>Given matrix <code>R</code>, find a alignment using the greedy method.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><code>R</code> : m x n matrix</li>
+<li><code>seeds</code> : Initial seed node pairs</li>
+<li><code>maxiter</code> : Stop after aligning <code>maxiter</code> node pairs</li>
+</ul>
+<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/c5f5df96b0e5595197ebd77d13ff84f76374b144/src/IsoRank.jl#L180-L190' class='documenter-source'>source</a><br></p>
 <p><a id='IsoRank.powermethod!-Tuple{Any,Any}' href='#IsoRank.powermethod!-Tuple{Any,Any}'>#</a>
 <strong><code>IsoRank.powermethod!</code></strong> &mdash; <em>Method</em>.</p>
 <pre class="codehilite"><code>powermethod!(A, x; &lt;keyword arguments&gt;) -&gt; radius, x, [log/history]</code></pre>
@@ -142,10 +156,10 @@
 <p><strong>Keyword arguments</strong></p>
 <ul>
 <li><code>maxiter</code> : maximum # of iterations</li>
-<li><code>tol=eps(Float64) * size(A,2)</code> : error tolerance in L_1</li>
+<li><code>tol=eps(Float64) * size(A,2)</code> : error tolerance in L_1 norm</li>
 <li><code>log=true,verbose=true</code> : logging and printing</li>
 </ul>
-<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/9971a4684fa008f29f801b327434790da350cbb8/src/IsoRank.jl#L36-L51' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/c5f5df96b0e5595197ebd77d13ff84f76374b144/src/IsoRank.jl#L37-L52' class='documenter-source'>source</a><br></p>
 <p><a id='IsoRank.kronlm-Union{Tuple{Type{T},Any,Any}, Tuple{T}} where T' href='#IsoRank.kronlm-Union{Tuple{Type{T},Any,Any}, Tuple{T}} where T'>#</a>
 <strong><code>IsoRank.kronlm</code></strong> &mdash; <em>Method</em>.</p>
 <pre class="codehilite"><code>kronlm([T], A, B)</code></pre>
@@ -157,7 +171,26 @@
 <li><code>A,B</code> : linear operators with multiply and transpose operations</li>
 <li><code>T</code> : element type of the resulting linear operator</li>
 </ul>
-<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/9971a4684fa008f29f801b327434790da350cbb8/src/IsoRank.jl#L9-L22' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/c5f5df96b0e5595197ebd77d13ff84f76374b144/src/IsoRank.jl#L10-L23' class='documenter-source'>source</a><br></p>
+<p><a id='IsoRank.pagerank' href='#IsoRank.pagerank'>#</a>
+<strong><code>IsoRank.pagerank</code></strong> &mdash; <em>Function</em>.</p>
+<pre class="codehilite"><code> pagerank(A, damping=0.85, p = fill(1/size(A,2),size(A,2));
+          &lt;keyword args&gt;) -&gt; x [, res, L]</code></pre>
+
+
+<p>Creates PageRank vector.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><code>A</code> : Adjacency matrix of the graph. A[u,v] = true if u -&gt; v</li>
+<li><code>damping</code> : Damping</li>
+<li><code>p</code> : Initial probability vector</li>
+</ul>
+<p><strong>Keyword arguments</strong></p>
+<ul>
+<li><code>details=false</code> : If true, returns (x,res,L) where x is the PageRank vector, res is the power method detailed results structure, L is the linear operator that the power method finds the eigenvector of; if false, returns x.</li>
+<li>See <a href="./#IsoRank.powermethod!-Tuple{Any,Any}"><code>powermethod!</code></a> for other keyword arguments</li>
+</ul>
+<p><a target='_blank' href='https://github.com/vvjn/IsoRank.jl/blob/c5f5df96b0e5595197ebd77d13ff84f76374b144/src/IsoRank.jl#L79-L96' class='documenter-source'>source</a><br></p>
               
             </div>
           </div>
