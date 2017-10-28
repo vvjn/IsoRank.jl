@@ -4,7 +4,12 @@
 described in "Global alignment of multiple protein interaction
 networks with application to functional orthology detection", Rohit
 Singh, Jinbo Xu, and Bonnie Berger (2008). IsoRank.jl also contains
-a PageRank implementation.
+a PageRank implementation. The greedy network alignment method
+is also implemented here.
+
+IsoRank calculates the topological similarity of all pairs of nodes
+across two networks. IsoRank can also be used to tune prior
+similarities to take topological node similarity into account.
 
 The IsoRank matrix is calculated by creating the product graph of two
 networks, and then performing PageRank on the product graph. PageRank
@@ -12,9 +17,10 @@ is done by using the power method to calculate the dominant
 eigenvector of the modified adjacency matrix of the product
 graph. Since IsoRank.jl doesn't explicitly build the product graph in
 order to perform power iteration, it has much better time and space
-complexity compared to other implementations of IsoRank.
-
-The greedy network alignment method described in the paper is also implemented here.
+complexity compared to other implementations of IsoRank. This
+implementation of IsoRank runs in `O(K|E|)`, where `|E|` is the
+number of edges in the two networks, and `K` is the total number of
+iterations required to converge under the power method.
 
 ## Installation
 
@@ -30,10 +36,9 @@ Pkg.clone("https://github.com/vvjn/NetalignUtils.jl")
 ## Example usage
 
 We load an example network from the `examples/` directory and create
-an IsoRank matrix between the network and itself. Unlike the original
-paper which performs no damping when using network topology alone, we
-give it a damping factor of 0.85 in order to calculate a good
-IsoRank matrix using just network topology.
+an IsoRank matrix between the network and itself. We use a damping
+factor of 0.85 in order to calculate a good IsoRank matrix using just
+network topology.
 
 ```julia
 using NetalignUtils
@@ -42,7 +47,7 @@ using IsoRank
 G1 = readgw("0Krogan_2007_high.gw").G
 G2 = G1
 
-R = isorank(G1, G2, damping=0.85)
+R = isorank(G1, G2, 0.85)
 
 R ./= maximum(R)
 truemap = 1:size(G2,1)
@@ -68,15 +73,20 @@ writedlm("yeast_yeast.aln", nodepairs)
 
 ## Using node similarities
 
-Assuming we have a matrix of node similarities, we can calculate the
-IsoRank matrix while incorporating external information through node
-similarities.  Here, `b` is a matrix of node similarities (but,
-obviously, use meaningful node similarities instead of random values).
+Assuming we have a matrix of prior node similarities, we can calculate
+the IsoRank matrix while incorporating external information. We treat
+the the node similarities as the personalization vector in PageRank.
+Here, `b` is a matrix of node similarities (but, obviously, you should
+use meaningful node similarities instead of random values). Here, we
+equally weigh topological node similarity and prior node similarity by
+setting the `alpha` variable to `0.5`. `alpha` must lie between `0.0`
+and `1.0`. To give more weight to topological node similarity,
+increase the `alpha` variable up to `1.0`.
 
 ```julia
 b = rand(size(G1,1), size(G2,1))
 
-R = isorank(G1, G2, b, 0.5)
+R = isorank(G1, G2, 0.5, b)
 ```
 
 ## Other parameters
@@ -84,14 +94,15 @@ R = isorank(G1, G2, b, 0.5)
 Maximum number of iterations and error tolerance can be set as follows.
 
 ```julia
-R = isorank(G1, G2, b, 0.5, maxiter=20, tol=1e-5)
+R = isorank(G1, G2, 0.5, b, maxiter=20, tol=1e-10)
 ```
 
-We can extract the modified adjacency matrix, `L`, of the product graph as follows.
-`vec(R)` is the dominant eigenvector and `res[1]` is the corresponding eigenvalue of `L`.
+We can extract the modified adjacency matrix, `L`, of the product
+graph as follows. `vec(R)` is the dominant eigenvector and `res[1]` is
+the corresponding eigenvalue of `L`.
 
 ```julia
-R,res,L = isorank(G1, G2, damping=0.85, details=true)
+R,res,L = isorank(G1, G2, 0.85, details=true)
 
 println(norm(L * vec(R) - res[1] * vec(R),1))
 ```

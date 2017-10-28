@@ -10,12 +10,12 @@ export isorank, kronlm, powermethod!, pagerank, greedyalign
 """
     kronlm([T], A, B)
 
-Kronecker product of A and B, stored as a linear operator (from LinearMaps.jl)
-so that you don't have to create the actual matrix.
-This is much faster than creating the matrix like
-the original paper does: O(|E|) instead of O(|E|^2)
-for each step of the power iteration where |E| is the
-average number of edges in the graphs
+Kronecker product of `A` and `B`, stored as a linear operator (from
+[LinearMaps.jl](https://github.com/Jutho/LinearMaps.jl.git)) so that
+you don't have to create the actual matrix.  This is much faster than
+directly creating the matrix: `O(|E|)` instead of `O(|E|^2)` for each
+step of the power iteration where `|E|` is the total number of edges
+in the graphs
 
 # Arguments
 - `A,B` : linear operators with multiply and transpose operations
@@ -78,14 +78,19 @@ end
 
 """
     isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
-            b::AbstractMatrix, alpha::Real; <keyword arguments>)
-    
-Creates the IsoRank matrix. That is, finds the PageRank values
-of the modified adjacency matrix of the product graph of G1 and G2.
-b acts as node restarts allowing you to incorporate external information.    
-(See Rohit Singh, Jinbo Xu, and Bonnie Berger. (2008) Global alignment of
-multiple protein interaction networks with application to functional
-orthology detection, Proc. Natl. Acad. Sci. USA, 105:12763-12768.)
+            [alpha::Real=0.85, b::AbstractMatrix=ones(Float64,size(G1,1),size(G2,1))];
+            <keyword arguments>) -> R [, res, L]
+
+Creates the IsoRank matrix, which contains topological similarities of
+all nodes across two networks (See Rohit Singh, Jinbo Xu, and Bonnie
+Berger. (2008) Global alignment of multiple protein interaction
+networks with application to functional orthology detection,
+Proc. Natl. Acad. Sci. USA, 105:12763-12768.). That is, finds the
+PageRank values of the modified adjacency matrix of the product graph
+of G1 and G2.  `b`, containing prior node similarities, acts as the
+personalization vector allowing you to incorporate external
+information. If you don't have node similarities, you can still create
+a good IsoRank matrix by damping like PageRank does.
 
 # Arguments
 - `G1,G2` : two adjacency matrices
@@ -94,53 +99,31 @@ orthology detection, Proc. Natl. Acad. Sci. USA, 105:12763-12768.)
 
 # Keyword arguments
 - `details=false` : If true, returns (R,res,L) where R is the IsoRank
-  matrix, res is the power method detailed results structure, L is the linear
-  operator that the power method finds the eigenvector of; if false,
-  returns R
-- See [`powermethod!`](@ref) for other keyword arguments   
+    matrix of node similarities, res is the power method detailed
+    results structure, L is the linear operator that the power method
+    finds the eigenvector of; if false, returns R
+- See [`powermethod!`](@ref) for other keyword arguments
 """
 function isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
-                 b::AbstractMatrix, alpha::Real;
+                 alpha::Real=0.85, b::AbstractMatrix=ones(Float64,size(G1,1),size(G2,1));
                  details=false, args...)
     A = kronlm(Float64,G2,G1)
     S = 1.0 ./ (A * ones(Float64,size(A,2))) # rows of A sum to 1
-    if alpha != 1.0
-        bnorm = norm(b,1)
-        bnorm==0.0 && error("|b| = 0")
-        bscaled = (1.0-alpha) .* vec(b./bnorm) # make b sum to 1 and scale it
-        L = LinearMap{Float64}((y,x) -> begin
-                               y[:] = S .* x
-                               At_mul_B!(y, A, y) # Using kronlm, so y <- A'y is okay
-                               y .= alpha .* y .+ bscaled
-                               y
-                               end, size(A,1), size(A,2))
-        x = copy(vec(b))
-    else
-        L = LinearMap{Float64}((y,x) -> begin
-                               y[:] = S .* x
-                               At_mul_B!(y, A, y) # Using kronlm, so y <- A'y is okay
-                               y
-                               end, size(A,1), size(A,2))
-        x = ones(Float64,size(L,2)) #rand(Float64,size(L,2))
-    end
+
+    bnorm = norm(b,1)
+    bnorm==0.0 && error("|b| = 0")
+    bscaled = (1.0-alpha) .* vec(b./bnorm) # make b sum to 1 and scale it
+    L = LinearMap{Float64}((y,x) -> begin
+                           y[:] = S .* x
+                           At_mul_B!(y, A, y) # Using kronlm, so y <- A'y is okay
+                           y .= alpha .* y .+ bscaled
+                           y
+                           end, size(A,1), size(A,2))
+    x = copy(vec(b))
+
     res = powermethod!(L, x; args...)
     R = reshape(x, size(G1,1), size(G2,1))
     if details R, res, L else R end
-end
-
-"""
-    isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
-            [damping=0.85]; <keyword arguments>)
-    
-If you don't have node similarities, you can still create
-a decent IsoRank matrix by doing damping like PageRank does.
-This is unlike the original paper that creates a
-bad IsoRank matrix when b = 0 or alpha = 1.
-"""
-function isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC;
-                 damping=0.85, args...)
-    b = ones(Float64,size(G1,1),size(G2,1))
-    isorank(G1,G2,b,damping; args...)   
 end
 
 """
