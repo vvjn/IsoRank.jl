@@ -13,7 +13,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Introduction",
     "category": "section",
-    "text": "IsoRank.jl is a Julia implementation of IsoRank as described in \"Global alignment of multiple protein interaction networks with application to functional orthology detection\", Rohit Singh, Jinbo Xu, and Bonnie Berger (2008). IsoRank.jl also contains a PageRank implementation.The IsoRank matrix is calculated by creating the product graph of two networks, and then performing PageRank on the product graph. PageRank is done by using the power method to calculate the dominant eigenvector of the modified adjacency matrix of the product graph. Since IsoRank.jl doesn't explicitly build the product graph in order to perform power iteration, it has much better time and space complexity compared to other implementations of IsoRank.The greedy network alignment method described in the paper is also implemented here."
+    "text": "IsoRank.jl is a Julia implementation of IsoRank as described in \"Global alignment of multiple protein interaction networks with application to functional orthology detection\", Rohit Singh, Jinbo Xu, and Bonnie Berger (2008). IsoRank.jl also contains a PageRank implementation. The greedy network alignment method is also implemented here.IsoRank calculates the topological similarity of all pairs of nodes across two networks. IsoRank can also be used to tune prior similarities to take topological node similarity into account.The IsoRank matrix is calculated by creating the product graph of two networks, and then performing PageRank on the product graph. PageRank is done by using the power method to calculate the dominant eigenvector of the modified adjacency matrix of the product graph. Since IsoRank.jl doesn't explicitly build the product graph in order to perform power iteration, it has much better time and space complexity compared to other implementations of IsoRank. This implementation of IsoRank runs in O(K|E|), where |E| is the number of edges in the two networks, and K is the total number of iterations required to converge under the power method."
 },
 
 {
@@ -29,7 +29,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Example usage",
     "category": "section",
-    "text": "We load an example network from the examples/ directory and create an IsoRank matrix between the network and itself. Unlike the original paper which performs no damping when using network topology alone, we give it a damping factor of 0.85 in order to calculate a good IsoRank matrix using just network topology.using NetalignUtils\nusing IsoRank\n\nG1 = readgw(\"0Krogan_2007_high.gw\").G\nG2 = G1\n\nR = isorank(G1, G2, damping=0.85)\n\nR ./= maximum(R)\ntruemap = 1:size(G2,1)\nrandmap = randperm(size(G2,1))\nprintln(sum(R[sub2ind(size(R),truemap,truemap)]))\nprintln(sum(R[sub2ind(size(R),truemap,randmap)]))Given the IsoRank matrix, we perform greedy alignment as follows.f = greedyalign(R)Given the alignment f, we construct the aligned node pairs and save the node pairs to file as follows.nodepairs = hcat(t1.nodes, t2.nodes[f])\n\nwritedlm(\"yeast_yeast.aln\", nodepairs)"
+    "text": "We load an example network from the examples/ directory and create an IsoRank matrix between the network and itself. We use a damping factor of 0.85 in order to calculate a good IsoRank matrix using just network topology.using NetalignUtils\nusing IsoRank\n\nG1 = readgw(\"0Krogan_2007_high.gw\").G\nG2 = G1\n\nR = isorank(G1, G2, 0.85)\n\nR ./= maximum(R)\ntruemap = 1:size(G2,1)\nrandmap = randperm(size(G2,1))\nprintln(sum(R[sub2ind(size(R),truemap,truemap)]))\nprintln(sum(R[sub2ind(size(R),truemap,randmap)]))Given the IsoRank matrix, we perform greedy alignment as follows.f = greedyalign(R)Given the alignment f, we construct the aligned node pairs and save the node pairs to file as follows.nodepairs = hcat(t1.nodes, t2.nodes[f])\n\nwritedlm(\"yeast_yeast.aln\", nodepairs)"
 },
 
 {
@@ -37,7 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Using node similarities",
     "category": "section",
-    "text": "Assuming we have a matrix of node similarities, we can calculate the IsoRank matrix while incorporating external information through node similarities.  Here, b is a matrix of node similarities (but, obviously, use meaningful node similarities instead of random values).b = rand(size(G1,1), size(G2,1))\n\nR = isorank(G1, G2, b, 0.5)"
+    "text": "Assuming we have a matrix of prior node similarities, we can calculate the IsoRank matrix while incorporating external information. We treat the the node similarities as the personalization vector in PageRank. Here, b is a matrix of node similarities (but, obviously, you should use meaningful node similarities instead of random values). Here, we equally weigh topological node similarity and prior node similarity by setting the alpha variable to 0.5. alpha must lie between 0.0 and 1.0. To give more weight to topological node similarity, increase the alpha variable up to 1.0.b = rand(size(G1,1), size(G2,1))\n\nR = isorank(G1, G2, 0.5, b)"
 },
 
 {
@@ -45,7 +45,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Other parameters",
     "category": "section",
-    "text": "Maximum number of iterations and error tolerance can be set as follows.R = isorank(G1, G2, b, 0.5, maxiter=20, tol=1e-5)We can extract the modified adjacency matrix, L, of the product graph as follows. vec(R) is the dominant eigenvector and res[1] is the corresponding eigenvalue of L.R,res,L = isorank(G1, G2, damping=0.85, details=true)\n\nprintln(norm(L * vec(R) - res[1] * vec(R),1))"
+    "text": "Maximum number of iterations and error tolerance can be set as follows.R = isorank(G1, G2, 0.5, b, maxiter=20, tol=1e-10)We can extract the modified adjacency matrix, L, of the product graph as follows. vec(R) is the dominant eigenvector and res[1] is the corresponding eigenvalue of L.R,res,L = isorank(G1, G2, 0.85, details=true)\n\nprintln(norm(L * vec(R) - res[1] * vec(R),1))"
 },
 
 {
@@ -57,19 +57,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "funs.html#IsoRank.isorank-Tuple{SparseMatrixCSC,SparseMatrixCSC,AbstractArray{T,2} where T,Real}",
+    "location": "funs.html#IsoRank.isorank",
     "page": "Functions",
     "title": "IsoRank.isorank",
-    "category": "Method",
-    "text": "isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,\n        b::AbstractMatrix, alpha::Real; <keyword arguments>)\n\nCreates the IsoRank matrix. That is, finds the PageRank values of the modified adjacency matrix of the product graph of G1 and G2. b acts as node restarts allowing you to incorporate external information.     (See Rohit Singh, Jinbo Xu, and Bonnie Berger. (2008) Global alignment of multiple protein interaction networks with application to functional orthology detection, Proc. Natl. Acad. Sci. USA, 105:12763-12768.)\n\nArguments\n\nG1,G2 : two adjacency matrices\nb : matrix of node similarities between G1 and G2, not necessarily normalized\nalpha: weight between edge and node conservation\n\nKeyword arguments\n\ndetails=false : If true, returns (R,res,L) where R is the IsoRank matrix, res is the power method detailed results structure, L is the linear operator that the power method finds the eigenvector of; if false, returns R\nSee powermethod! for other keyword arguments   \n\n\n\n"
-},
-
-{
-    "location": "funs.html#IsoRank.isorank-Tuple{SparseMatrixCSC,SparseMatrixCSC}",
-    "page": "Functions",
-    "title": "IsoRank.isorank",
-    "category": "Method",
-    "text": "isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,\n        [damping=0.85]; <keyword arguments>)\n\nIf you don't have node similarities, you can still create a decent IsoRank matrix by doing damping like PageRank does. This is unlike the original paper that creates a bad IsoRank matrix when b = 0 or alpha = 1.\n\n\n\n"
+    "category": "Function",
+    "text": "isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,\n        [alpha::Real=0.85, b::AbstractMatrix=ones(Float64,size(G1,1),size(G2,1))];\n        <keyword arguments>) -> R [, res, L]\n\nCreates the IsoRank matrix, which contains topological similarities of all nodes across two networks (See Rohit Singh, Jinbo Xu, and Bonnie Berger. (2008) Global alignment of multiple protein interaction networks with application to functional orthology detection, Proc. Natl. Acad. Sci. USA, 105:12763-12768.). That is, finds the PageRank values of the modified adjacency matrix of the product graph of G1 and G2.  b, containing prior node similarities, acts as the personalization vector allowing you to incorporate external information. If you don't have node similarities, you can still create a good IsoRank matrix by damping like PageRank does.\n\nArguments\n\nG1,G2 : two adjacency matrices\nb : matrix of node similarities between G1 and G2, not necessarily normalized\nalpha: weight between edge and node conservation\n\nKeyword arguments\n\ndetails=false : If true, returns (R,res,L) where R is the IsoRank   matrix of node similarities, res is the power method detailed   results structure, L is the linear operator that the power method   finds the eigenvector of; if false, returns R\nSee powermethod! for other keyword arguments\n\n\n\n"
 },
 
 {
@@ -89,19 +81,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "funs.html#IsoRank.powermethod!-Tuple{Any,Any}",
+    "location": "funs.html#IsoRank.powermethod!",
     "page": "Functions",
     "title": "IsoRank.powermethod!",
-    "category": "Method",
+    "category": "Function",
     "text": "powermethod!(A, x; <keyword arguments>) -> radius, x, [log/history]\n\nPerforms power method in order to find the dominant eigenvector of the linear operator A. Eigenvector is normalized w.r.t. L_1 norm. Modifies initial eigenvector estimate x.\n\nArguments\n\nA : linear operator\nx : initial estimate of the eigenvector, not necessarily normalized\n\nKeyword arguments\n\nmaxiter : maximum # of iterations\ntol=eps(Float64) * size(A,2) : error tolerance in L_1 norm\nlog=true,verbose=true : logging and printing\n\n\n\n"
 },
 
 {
-    "location": "funs.html#IsoRank.kronlm-Union{Tuple{Type{T},Any,Any}, Tuple{T}} where T",
+    "location": "funs.html#IsoRank.kronlm",
     "page": "Functions",
     "title": "IsoRank.kronlm",
-    "category": "Method",
-    "text": "kronlm([T], A, B)\n\nKronecker product of A and B, stored as a linear operator (from LinearMaps.jl) so that you don't have to create the actual matrix. This is much faster than creating the matrix like the original paper does: O(|E|) instead of O(|E|^2) for each step of the power iteration where |E| is the average number of edges in the graphs\n\nArguments\n\nA,B : linear operators with multiply and transpose operations\nT : element type of the resulting linear operator \n\n\n\n"
+    "category": "Function",
+    "text": "kronlm([T], A, B)\n\nKronecker product of A and B, stored as a linear operator (from LinearMaps.jl) so that you don't have to create the actual matrix.  This is much faster than directly creating the matrix: O(|E|) instead of O(|E|^2) for each step of the power iteration where |E| is the total number of edges in the graphs\n\nArguments\n\nA,B : linear operators with multiply and transpose operations\nT : element type of the resulting linear operator \n\n\n\n"
 },
 
 {
@@ -109,7 +101,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Functions",
     "title": "Functions",
     "category": "section",
-    "text": "CurrentModule = IsoRankisorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,\n         b::AbstractMatrix, alpha::Real;\n         details=false, args...)\nisorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC;\n         damping=0.85, args...)\ngreedyalign\npagerank\npowermethod!(A, x; maxiter=15, tol=eps(Float64) * size(A,2),\n                    log=true, verbose=true)\nkronlm(::Type{T},A,B) where {T}"
+    "text": "CurrentModule = IsoRankisorank\ngreedyalign\npagerank\npowermethod!\nkronlm"
 },
 
 ]}
