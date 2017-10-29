@@ -10,8 +10,10 @@ a PageRank implementation. The greedy network alignment method
 is also implemented here.
 
 IsoRank calculates the topological similarity of all pairs of nodes
-across two networks. IsoRank can also be used to tune prior
-similarities to take topological node similarity into account.
+across two networks, with the assumption that a node is similar to
+another node if the node's neighbors are similar to the other node's
+neighbors. IsoRank can also use prior node similarity information
+while calculating this topological node similarity measure.
 
 The IsoRank matrix is calculated by creating the product graph of two
 networks, and then performing PageRank on the product graph. PageRank
@@ -20,9 +22,10 @@ eigenvector of the modified adjacency matrix of the product
 graph. Since IsoRank.jl doesn't explicitly build the product graph in
 order to perform power iteration, it has much better time and space
 complexity compared to other implementations of IsoRank. This
-implementation of IsoRank runs in `O(K|E|)`, where `|E|` is the
-number of edges in the two networks, and `K` is the total number of
-iterations required to converge under the power method.
+implementation of IsoRank runs in `O(K(|V|^2+|V||E|))`, where `|V|`
+and`|E|` are the number of nodes and edges in the two networks, and
+`K` is the total number of iterations required to converge under the
+power method.
 
 
 ## Installation
