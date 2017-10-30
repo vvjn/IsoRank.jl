@@ -30,3 +30,10 @@ function test3()
     sum(vec(R) .== ones(9)./9)==0 && norm(L*vec(R) - res[1].*vec(R)) < 1e-2
 end
 @test test3()
+
+function test4()
+    diamond = sparse(vec([1 1 2 2 3]), vec([2 3 3 4 4]), 1.0,4,4)
+    x = IsoRank.pagerank(diamond,verbose=false)
+    isapprox(x, vec([0.128414 0.182991 0.260762 0.427833]), atol=0.01)
+end
+@test test4()

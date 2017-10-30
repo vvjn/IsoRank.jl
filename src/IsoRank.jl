@@ -12,7 +12,8 @@ export isorank, kronlm, powermethod!, pagerank, greedyalign
 
 Kronecker product of `A` and `B`, stored as a linear operator (from
 [LinearMaps.jl](https://github.com/Jutho/LinearMaps.jl.git)) so that
-you don't have to create the actual matrix.  This is much faster than
+you don't have to create the actual matrix, i.e. `kronlm(A,B)*x == kron(A,B)*x`.
+This is much faster than
 directly creating the matrix: `O(|V|^2+|E|)` instead of `O(|E|^2)` for each
 step of the power iteration where `|V|` and |E|` are the number of nodes and edges
 in the graphs.
@@ -56,7 +57,7 @@ function powermethod!(A, x, Ax=similar(x);
                       maxiter=15, tol=eps(Float64) * size(A,2),
                       log=true, verbose=true)
     T = eltype(A)
-    x ./= vecnorm(x,1)
+    x ./= norm(x,1)
     verbose && println("Running power method, maxiter = $maxiter, tol = $tol")
     history = Tuple{Int,T,T}[]
     iter = 0
@@ -64,9 +65,9 @@ function powermethod!(A, x, Ax=similar(x);
     err = Inf
     while iter <= maxiter
         A_mul_B!(Ax, A, x)
-        radius = vecnorm(Ax,1)
+        radius = norm(Ax,1)
         Ax ./= radius # want |x|_1 = 1
-        err = vecnorm(Ax-x,1)
+        err = norm(Ax-x,1)
         verbose && @show iter,err,radius
         log && push!(history,(iter,err,radius))
         copy!(x, Ax)
@@ -105,27 +106,53 @@ a good IsoRank matrix by damping like PageRank does.
     finds the eigenvector of; if false, returns R
 - See [`powermethod!`](@ref) for other keyword arguments
 """
-function isorank(G1::SparseMatrixCSC, G2::SparseMatrixCSC,
+function isorank(G1::AbstractMatrix, G2::AbstractMatrix,
                  alpha::Real=0.85, B::AbstractMatrix=ones(Float64,size(G1,1),size(G2,1));
                  details=false, args...)
     A = kronlm(Float64,G2,G1)
-    S = 1.0 ./ (A * ones(Float64,size(A,2))) # rows of A sum to 1
-    D = find(isinf,S) # D[(v in G2, u in G1)] is Inf if u or v has no neighbors
-    S[D] = 0.0
+    res = pagerank(A, alpha, vec(B); details=details, args...)
+    if details
+        R = reshape(res[1], size(G1,1), size(G2,1))
+        R, res[2], res[3], A
+    else
+        R = reshape(res, size(G1,1), size(G2,1))
+        R
+    end
+end
+
+"""
+     pagerank(A, alpha=0.85, p = fill(1/size(A,2),size(A,2)),
+              x=copy(p), Ax=similar(x);
+              <keyword args>) -> x [, res, L]
+
+Creates PageRank vector.
+
+# Arguments
+- `A` : Adjacency matrix of the graph. A[u,v] = 1 if u -> v
+- `alpha` : Damping.
+- `p` : Initial probability vector, or personalization vector, not necessarily normalized.
     
-    bnorm = vecnorm(B,1)
-    bnorm==0.0 && error("|b| = 0")
-    b = vec(B./bnorm)
+# Keyword arguments
+- `details=false` : If true, returns (x,res,L) where x is the PageRank
+  vector, res is the power method detailed results structure, L is the linear
+  operator that the power method finds the eigenvector of; if false,
+  returns x.
+- See [`powermethod!`](@ref) for other keyword arguments   
+"""    
+function pagerank(A, alpha=0.85, p = fill(1/size(A,2),size(A,2));
+                  details=false, args...)
+    S = 1.0 ./ (A * ones(Float64,size(A,2)))
+    D = find(isinf,S) # S[i] = Inf if node i has no outlinks
+    S[D] = 0.0
+    p = p./norm(p,1)
     L = LinearMap{Float64}((y,x) -> begin
                            At_mul_B!(y, A, S .* x)
-                           y .= alpha .* y .+ (alpha * sum(x[D]) + 1.0 - alpha) .* b
+                           y .= alpha .* y .+ (alpha * sum(x[D]) + 1.0 - alpha) .* p
                            y
                            end, size(A,1), size(A,2))
-    x = copy(vec(b))
-
+    x = copy(p)
     res = powermethod!(L, x; args...)
-    R = reshape(x, size(G1,1), size(G2,1))
-    if details R, res, L else R end
+    if details x, res, L else x end
 end
 
 """
@@ -167,39 +194,6 @@ function greedyalign(R::AbstractMatrix,seeds=Vector{Tuple{Int,Int}}();
     end
     println()
     f
-end
-
-"""
-     pagerank(A, alpha=0.85, p = fill(1/size(A,2),size(A,2));
-              <keyword args>) -> x [, res, L]
-
-Creates PageRank vector.
-
-# Arguments
-- `A` : Adjacency matrix of the graph. A[u,v] = 1 if u -> v
-- `alpha` : Damping
-- `p` : Initial probability vector, normalized
-
-# Keyword arguments
-- `details=false` : If true, returns (x,res,L) where x is the PageRank
-  vector, res is the power method detailed results structure, L is the linear
-  operator that the power method finds the eigenvector of; if false,
-  returns x.
-- See [`powermethod!`](@ref) for other keyword arguments   
-"""    
-function pagerank(A, alpha=0.85, p = fill(1/size(A,2),size(A,2));
-                  details=false, args...)
-    S = 1.0 ./ (A * ones(Float64,size(A,2))) # rows of A sum to 1
-    D = find(isinf,S) # S[i] = Inf if node i has no outlinks
-    S[D] = 0.0
-    L = LinearMap{Float64}((y,x) -> begin
-                           At_mul_B!(y, A, S .* x)
-                           y .= alpha .* y .+ (alpha * sum(x[D]) + 1.0 - alpha) .* p
-                           y
-                           end, size(A,1), size(A,2))
-    x = copy(p)
-    res = powermethod!(L, x; args...)
-    if details x, res, L else x end
 end
 
 end
