@@ -77,7 +77,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Functions",
     "title": "IsoRank.pagerank",
     "category": "Function",
-    "text": " pagerank(A, alpha=0.85, p = fill(1/size(A,2),size(A,2));\n          <keyword args>) -> x [, res, L]\n\nCreates PageRank vector.\n\nArguments\n\nA : Adjacency matrix of the graph. A[u,v] = 1 if u -> v\nalpha : Damping\np : Initial probability vector, normalized\n\nKeyword arguments\n\ndetails=false : If true, returns (x,res,L) where x is the PageRank vector, res is the power method detailed results structure, L is the linear operator that the power method finds the eigenvector of; if false, returns x.\nSee powermethod! for other keyword arguments   \n\n\n\n"
+    "text": " pagerank(A, alpha=0.85, p = fill(1/size(A,2),size(A,2)),\n          x=copy(p), Ax=similar(x);\n          <keyword args>) -> x [, res, L]\n\nCreates PageRank vector.\n\nArguments\n\nA : Adjacency matrix of the graph. A[u,v] = 1 if u -> v\nalpha : Damping.\np : Initial probability vector, or personalization vector, not necessarily normalized.\n\nKeyword arguments\n\ndetails=false : If true, returns (x,res,L) where x is the PageRank vector, res is the power method detailed results structure, L is the linear operator that the power method finds the eigenvector of; if false, returns x.\nSee powermethod! for other keyword arguments   \n\n\n\n"
 },
 
 {
@@ -93,7 +93,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Functions",
     "title": "IsoRank.kronlm",
     "category": "Function",
-    "text": "kronlm([T], A, B)\n\nKronecker product of A and B, stored as a linear operator (from LinearMaps.jl) so that you don't have to create the actual matrix.  This is much faster than directly creating the matrix: O(|V|^2+|E|) instead of O(|E|^2) for each step of the power iteration where |V| and |E|` are the number of nodes and edges in the graphs.\n\nArguments\n\nA,B : linear operators with multiply and transpose operations\nT : element type of the resulting linear operator \n\n\n\n"
+    "text": "kronlm([T], A, B)\n\nKronecker product of A and B, stored as a linear operator (from LinearMaps.jl) so that you don't have to create the actual matrix, i.e. kronlm(A,B)*x == kron(A,B)*x. This is much faster than directly creating the matrix: O(|V|^2+|E|) instead of O(|E|^2) for each step of the power iteration where |V| and |E|` are the number of nodes and edges in the graphs.\n\nArguments\n\nA,B : linear operators with multiply and transpose operations\nT : element type of the resulting linear operator \n\n\n\n"
 },
 
 {
