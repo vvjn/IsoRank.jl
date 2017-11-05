@@ -33,7 +33,7 @@ end
 
 function test4()
     diamond = sparse(vec([1 1 2 2 3]), vec([2 3 3 4 4]), 1.0,4,4)
-    x = IsoRank.pagerank(diamond,verbose=false)
+    x = pageranklm(diamond,verbose=false)
     isapprox(x, vec([0.128414 0.182991 0.260762 0.427833]), atol=0.01)
 end
 @test test4()

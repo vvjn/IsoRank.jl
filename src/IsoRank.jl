@@ -5,7 +5,7 @@ module IsoRank
 using LinearMaps
 using DataStructures
 
-export isorank, kronlm, powermethod!, pagerank, greedyalign
+export isorank, kronlm, powermethod!, greedyalign, pageranklm
 
 """
     kronlm([T], A, B)
@@ -14,7 +14,7 @@ Kronecker product of `A` and `B`, stored as a linear operator (from
 [LinearMaps.jl](https://github.com/Jutho/LinearMaps.jl.git)) so that
 you don't have to create the actual matrix, i.e. `kronlm(A,B)*x == kron(A,B)*x`.
 This is much faster than
-directly creating the matrix: `O(|V|^2+|E|)` instead of `O(|E|^2)` for each
+directly creating the matrix: `O(|V|^2+|V||E|)` instead of `O(|V|^2 + |E|^2)` for each
 step of the power iteration where `|V|` and |E|` are the number of nodes and edges
 in the graphs.
 
@@ -95,7 +95,7 @@ information. If you don't have node similarities, you can still create
 a good IsoRank matrix by damping like PageRank does.
 
 # Arguments
-- `G1,G2` : two adjacency matrices
+- `G1,G2` : two adjacency matrices of undirected networks
 - `B` : matrix of node similarities between `G1` and `G2`, not necessarily normalized
 - `alpha`: weight between edge and node conservation
 
@@ -110,7 +110,7 @@ function isorank(G1::AbstractMatrix, G2::AbstractMatrix,
                  alpha::Real=0.85, B::AbstractMatrix=ones(Float64,size(G1,1),size(G2,1));
                  details=false, args...)
     A = kronlm(Float64,G2,G1)
-    res = pagerank(A, alpha, vec(B); details=details, args...)
+    res = pageranklm(A, alpha, vec(B); details=details, args...)
     if details
         R = reshape(res[1], size(G1,1), size(G2,1))
         R, res[2], res[3], A
@@ -121,7 +121,7 @@ function isorank(G1::AbstractMatrix, G2::AbstractMatrix,
 end
 
 """
-     pagerank(A, alpha=0.85, p = fill(1/size(A,2),size(A,2)),
+     pageranklm(A, alpha=0.85, p = fill(1/size(A,2),size(A,2)),
               x=copy(p), Ax=similar(x);
               <keyword args>) -> x [, res, L]
 
@@ -139,7 +139,7 @@ Creates PageRank vector.
   returns x.
 - See [`powermethod!`](@ref) for other keyword arguments   
 """    
-function pagerank(A, alpha=0.85, p = fill(1/size(A,2),size(A,2));
+function pageranklm(A, alpha=0.85, p = fill(1/size(A,2),size(A,2));
                   details=false, args...)
     S = 1.0 ./ (A * ones(Float64,size(A,2)))
     D = find(isinf,S) # S[i] = Inf if node i has no outlinks
@@ -170,6 +170,8 @@ function greedyalign(R::AbstractMatrix,seeds=Vector{Tuple{Int,Int}}();
                      maxiter=size(R,1)-length(seeds))
     f = zeros(Int,size(R,1))
     n1 = size(R,1); n2 = size(R,2)
+    kv = (((i,j),-R[i,j]) for i=1:n1, j=1:n2)
+    Q = PriorityQueue{Tuple{Int,Int},eltype(R)}(kv)
     L1 = Set{Int}()
     L2 = Set{Int}() # nodes already aligned
     for k = 1:length(seeds)
@@ -177,10 +179,10 @@ function greedyalign(R::AbstractMatrix,seeds=Vector{Tuple{Int,Int}}();
         f[i] = j
         push!(L1,i)
         push!(L2,j)
+        for ip = setdiff(1:n1,L1); dequeue!(Q,(ip,j)); end
+        for jp = setdiff(1:n2,L2); dequeue!(Q,(i,jp)); end
     end
     println("Building priority queue")
-    kv = [((i,j),-R[i,j]) for i=1:n1, j=1:n2 if !(i in L1 || j in L2)]
-    Q = PriorityQueue{Tuple{Int,Int},eltype(R)}(kv)
     iter = 1
     while iter <= maxiter && !isempty(Q)
         i,j = dequeue!(Q)

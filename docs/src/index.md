@@ -32,23 +32,22 @@ read networks and so we install it as follows.
 
 ```julia
 Pkg.clone("https://github.com/vvjn/IsoRank.jl")
-Pkg.clone("https://github.com/vvjn/NetalignMeasures.jl")
-Pkg.clone("https://github.com/vvjn/NetalignUtils.jl")
 ```
 
 ## Example usage
 
-We load an example network from the `examples/` directory and create
-an IsoRank matrix between the network and itself. We use a damping
-factor of 0.85 in order to calculate a good IsoRank matrix using just
-network topology.
+We generate a scale-free network and create an IsoRank matrix between
+the network and itself . We use a damping factor of 0.85 in order to
+calculate a good IsoRank matrix using just network topology.
 
 ```julia
-using NetalignUtils
 using IsoRank
 
-G1 = readgw("0Krogan_2007_high.gw").G
-G2 = G1
+g1 = erdos_renyi(200,0.1)
+g2 = g1
+
+G1 = adjacency_matrix(g1)
+G2 = adjacency_matrix(g2)
 
 R = isorank(G1, G2, 0.85)
 
@@ -65,13 +64,12 @@ Given the IsoRank matrix, we perform greedy alignment as follows.
 f = greedyalign(R)
 ```
 
-Given the alignment `f`, we construct the aligned node pairs and
-save the node pairs to file as follows.
+The resulting alignment `f` describes a node mapping such that node
+`i` in `g1` is mapped to node `j` in `g2` if `f[i] = j`. Thus, we can
+create the aligned node pairs as follows.
 
 ``` julia
-nodepairs = hcat(t1.nodes, t2.nodes[f])
-
-writedlm("yeast_yeast.aln", nodepairs)
+hcat(1:length(f), f[1:length(f)])
 ```
 
 ## Using node similarities
@@ -79,8 +77,7 @@ writedlm("yeast_yeast.aln", nodepairs)
 Assuming we have a matrix of prior node similarities, we can calculate
 the IsoRank matrix while incorporating external information. We treat
 the the node similarities as the personalization vector in PageRank.
-Here, `b` is a matrix of node similarities (but, obviously, you should
-use meaningful node similarities instead of random values). Here, we
+Here, `b` is a matrix of node similarities. Here, we
 equally weigh topological node similarity and prior node similarity by
 setting the `alpha` variable to `0.5`. `alpha` must lie between `0.0`
 and `1.0`. To give more weight to topological node similarity,
@@ -88,6 +85,7 @@ increase the `alpha` variable up to `1.0`.
 
 ```julia
 b = rand(size(G1,1), size(G2,1))
+b[sub2ind(size(b), 1:length(f), 1:length(f))] = 1.0
 
 R = isorank(G1, G2, 0.5, b)
 ```
