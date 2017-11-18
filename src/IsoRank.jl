@@ -15,7 +15,7 @@ Kronecker product of `A` and `B`, stored as a linear operator (from
 you don't have to create the actual matrix, i.e. `kronlm(A,B)*x == kron(A,B)*x`.
 This is much faster than
 directly creating the matrix: `O(|V|^2+|V||E|)` instead of `O(|V|^2 + |E|^2)` for each
-step of the power iteration where `|V|` and |E|` are the number of nodes and edges
+step of the power iteration where `|V|` and `|E|` are the number of nodes and edges
 in the graphs.
 
 # Arguments

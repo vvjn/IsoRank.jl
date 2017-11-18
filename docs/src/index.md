@@ -38,10 +38,11 @@ Pkg.clone("https://github.com/vvjn/IsoRank.jl")
 
 We generate a scale-free network and create an IsoRank matrix between
 the network and itself . We use a damping factor of 0.85 in order to
-calculate a good IsoRank matrix using just network topology.
+calculate a good IsoRank matrix using just network topology. We load
+the `LightGraphs` package to generate networks.
 
 ```julia
-using IsoRank
+using IsoRank, LightGraphs
 
 g1 = erdos_renyi(200,0.1)
 g2 = g1
