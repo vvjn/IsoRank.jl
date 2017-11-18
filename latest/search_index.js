@@ -29,7 +29,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Example usage",
     "category": "section",
-    "text": "We generate a scale-free network and create an IsoRank matrix between the network and itself . We use a damping factor of 0.85 in order to calculate a good IsoRank matrix using just network topology.using IsoRank\n\ng1 = erdos_renyi(200,0.1)\ng2 = g1\n\nG1 = adjacency_matrix(g1)\nG2 = adjacency_matrix(g2)\n\nR = isorank(G1, G2, 0.85)\n\nR ./= maximum(R)\ntruemap = 1:size(G2,1)\nrandmap = randperm(size(G2,1))\nprintln(sum(R[sub2ind(size(R),truemap,truemap)]))\nprintln(sum(R[sub2ind(size(R),truemap,randmap)]))Given the IsoRank matrix, we perform greedy alignment as follows.f = greedyalign(R)The resulting alignment f describes a node mapping such that node i in g1 is mapped to node j in g2 if f[i] = j. Thus, we can create the aligned node pairs as follows.hcat(1:length(f), f[1:length(f)])"
+    "text": "We generate a scale-free network and create an IsoRank matrix between the network and itself . We use a damping factor of 0.85 in order to calculate a good IsoRank matrix using just network topology. We load the LightGraphs package to generate networks.using IsoRank, LightGraphs\n\ng1 = erdos_renyi(200,0.1)\ng2 = g1\n\nG1 = adjacency_matrix(g1)\nG2 = adjacency_matrix(g2)\n\nR = isorank(G1, G2, 0.85)\n\nR ./= maximum(R)\ntruemap = 1:size(G2,1)\nrandmap = randperm(size(G2,1))\nprintln(sum(R[sub2ind(size(R),truemap,truemap)]))\nprintln(sum(R[sub2ind(size(R),truemap,randmap)]))Given the IsoRank matrix, we perform greedy alignment as follows.f = greedyalign(R)The resulting alignment f describes a node mapping such that node i in g1 is mapped to node j in g2 if f[i] = j. Thus, we can create the aligned node pairs as follows.hcat(1:length(f), f[1:length(f)])"
 },
 
 {
@@ -93,7 +93,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Functions",
     "title": "IsoRank.kronlm",
     "category": "Function",
-    "text": "kronlm([T], A, B)\n\nKronecker product of A and B, stored as a linear operator (from LinearMaps.jl) so that you don't have to create the actual matrix, i.e. kronlm(A,B)*x == kron(A,B)*x. This is much faster than directly creating the matrix: O(|V|^2+|V||E|) instead of O(|V|^2 + |E|^2) for each step of the power iteration where |V| and |E|` are the number of nodes and edges in the graphs.\n\nArguments\n\nA,B : linear operators with multiply and transpose operations\nT : element type of the resulting linear operator \n\n\n\n"
+    "text": "kronlm([T], A, B)\n\nKronecker product of A and B, stored as a linear operator (from LinearMaps.jl) so that you don't have to create the actual matrix, i.e. kronlm(A,B)*x == kron(A,B)*x. This is much faster than directly creating the matrix: O(|V|^2+|V||E|) instead of O(|V|^2 + |E|^2) for each step of the power iteration where |V| and |E| are the number of nodes and edges in the graphs.\n\nArguments\n\nA,B : linear operators with multiply and transpose operations\nT : element type of the resulting linear operator \n\n\n\n"
 },
 
 {
