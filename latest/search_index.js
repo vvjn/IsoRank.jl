@@ -73,11 +73,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "funs.html#IsoRank.pageranklm",
+    "location": "funs.html#IsoRank.pagerank",
     "page": "Functions",
-    "title": "IsoRank.pageranklm",
+    "title": "IsoRank.pagerank",
     "category": "Function",
-    "text": " pageranklm(A, alpha=0.85, p = fill(1/size(A,2),size(A,2)),\n          x=copy(p), Ax=similar(x);\n          <keyword args>) -> x [, res, L]\n\nCreates PageRank vector.\n\nArguments\n\nA : Adjacency matrix of the graph. A[u,v] = 1 if u -> v\nalpha : Damping.\np : Initial probability vector, or personalization vector, not necessarily normalized.\n\nKeyword arguments\n\ndetails=false : If true, returns (x,res,L) where x is the PageRank vector, res is the power method detailed results structure, L is the linear operator that the power method finds the eigenvector of; if false, returns x.\nSee powermethod! for other keyword arguments   \n\n\n\n"
+    "text": " pagerank(A, alpha=0.85, p = fill(1/size(A,2),size(A,2)),\n          x=copy(p), Ax=similar(x);\n          <keyword args>) -> x [, res, L]\n\nCreates PageRank vector.\n\nArguments\n\nA : Adjacency matrix of the graph. A[u,v] = 1 if u -> v\nalpha : Damping.\np : Initial probability vector, or personalization vector, not necessarily normalized.\n\nKeyword arguments\n\ndetails=false : If true, returns (x,res,L) where x is the PageRank vector, res is the power method detailed results structure, L is the linear operator that the power method finds the eigenvector of; if false, returns x.\nSee powermethod! for other keyword arguments   \n\n\n\n"
 },
 
 {
@@ -101,7 +101,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Functions",
     "title": "Functions",
     "category": "section",
-    "text": "CurrentModule = IsoRankisorank\ngreedyalign\npageranklm\npowermethod!\nkronlm"
+    "text": "CurrentModule = IsoRankisorank\ngreedyalign\npagerank\npowermethod!\nkronlm"
 },
 
 ]}
