@@ -33,7 +33,20 @@ end
 
 function test4()
     diamond = sparse(vec([1 1 2 2 3]), vec([2 3 3 4 4]), 1.0,4,4)
-    x = pageranklm(diamond,verbose=false)
+    x = IsoRank.pagerank(diamond,verbose=false)
     isapprox(x, vec([0.128414 0.182991 0.260762 0.427833]), atol=0.01)
 end
 @test test4()
+
+function test5()
+    G1 = sprand(10,10,0.4); G1 = G1'+G1; G1 = Int.(G1 - Diagonal(G1) .> 0);
+    G2 = sprand(15,15,0.4); G2 = G2'+G2; G2 = Int.(G2 - Diagonal(G2) .> 0);
+    R, res, L = isorank(G1,G2,1.0,maxiter=25,tol=1e-9,details=true,verbose=false);
+    A = Float64.(kron(G2,G1)); S = 1.0 ./ (A' * ones(Float64,size(A,2))); scale!(A,S);
+    @test norm(A*vec(R) - res[1].*vec(R)) < 0.001
+    els,evs = eigs(A);
+    @test norm(A*evs[:,1] - L*evs[:,1]) < 0.001
+end
+test5()
+
+    

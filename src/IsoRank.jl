@@ -5,7 +5,7 @@ module IsoRank
 using LinearMaps
 using DataStructures
 
-export isorank, kronlm, powermethod!, greedyalign, pageranklm
+export isorank, greedyalign
 
 """
     kronlm([T], A, B)
@@ -110,7 +110,7 @@ function isorank(G1::AbstractMatrix, G2::AbstractMatrix,
                  alpha::Real=0.85, B::AbstractMatrix=ones(Float64,size(G1,1),size(G2,1));
                  details=false, args...)
     A = kronlm(Float64,G2,G1)
-    res = pageranklm(A, alpha, vec(B); details=details, args...)
+    res = pagerank(A, alpha, vec(B); details=details, args...)
     if details
         R = reshape(res[1], size(G1,1), size(G2,1))
         R, res[2], res[3], A
@@ -121,7 +121,7 @@ function isorank(G1::AbstractMatrix, G2::AbstractMatrix,
 end
 
 """
-     pageranklm(A, alpha=0.85, p = fill(1/size(A,2),size(A,2)),
+     pagerank(A, alpha=0.85, p = fill(1/size(A,2),size(A,2)),
               x=copy(p), Ax=similar(x);
               <keyword args>) -> x [, res, L]
 
@@ -139,7 +139,7 @@ Creates PageRank vector.
   returns x.
 - See [`powermethod!`](@ref) for other keyword arguments   
 """    
-function pageranklm(A, alpha=0.85, p = fill(1/size(A,2),size(A,2));
+function pagerank(A, alpha=0.85, p = fill(1/size(A,2),size(A,2));
                   details=false, args...)
     S = 1.0 ./ (A * ones(Float64,size(A,2)))
     D = find(isinf,S) # S[i] = Inf if node i has no outlinks

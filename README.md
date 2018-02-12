@@ -33,7 +33,7 @@ power method.
 IsoRank can be installed as follows.
 
 ```julia
-Pkg.clone("https://github.com/vvjn/IsoRank.jl")
+Pkg.add("IsoRank")
 ```
 
 # Documentation

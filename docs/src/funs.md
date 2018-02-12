@@ -8,7 +8,7 @@ CurrentModule = IsoRank
 ```@docs
 isorank
 greedyalign
-pageranklm
+pagerank
 powermethod!
 kronlm
 ```
