@@ -177,9 +177,9 @@ function greedyalign(R::AbstractMatrix,seeds=Vector{Tuple{Int,Int}}();
     for k = 1:length(seeds)
         i,j = seeds[k]
         f[i] = j
+        for ip = setdiff(1:n1,L1); dequeue!(Q,(ip,j)); end
         push!(L1,i)
         push!(L2,j)
-        for ip = setdiff(1:n1,L1); dequeue!(Q,(ip,j)); end
         for jp = setdiff(1:n2,L2); dequeue!(Q,(i,jp)); end
     end
     println("Building priority queue")
